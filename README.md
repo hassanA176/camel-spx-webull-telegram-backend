@@ -1,6 +1,6 @@
 # Camel SPX — Webull Options Data & Telegram Automation Backend
 
-Backend and automation portfolio project for a real-time options workflow that connects an authenticated Webull web session with Python data-processing services, Telegram bots, subscriptions, and operational dashboards.
+Backend and automation portfolio project for a real-time options workflow that connects an authenticated Webull web session with Python data-processing services, Telegram bots, subscriptions, and operational integrations.
 
 > **Portfolio scope:** my contribution to this project focused on the **backend**, **Webull data integration**, **login/session workflow**, and the **Telegram layer in full**. Frontend templates are included only where they help demonstrate backend integration and are not presented as my primary contribution.
 
@@ -16,7 +16,7 @@ I was responsible for:
 - Building the Telegram automation layer end-to-end.
 - Publishing trading alerts and generated trade summaries to public/private Telegram destinations.
 - Managing Telegram users, subscriptions, referral flows, notifications, and channel access.
-- Connecting Telegram workflows with the Flask backend and SQLite persistence.
+- Connecting Telegram workflows with backend services and SQLite persistence.
 - Integrating payment/webhook flows used by subscription bots.
 - Building scheduled monitoring/reporting workflows around the trading data.
 
@@ -53,7 +53,7 @@ The Telegram implementation includes:
 
 - Bot commands and interactive keyboards
 - Public/private channel workflows
-- Trade alerts and generated summary images
+- Trade alerts and generated trade-summary images
 - User registration
 - Phone/contact collection
 - Subscription packages
@@ -63,7 +63,7 @@ The Telegram implementation includes:
 - Admin notifications
 - Indicator subscription workflows
 - Payment-link and webhook integration
-- Telegram-to-Flask API integration
+- Telegram-to-backend API integration
 - Scheduled reporting and monitoring tasks
 
 ## High-Level Architecture
@@ -75,7 +75,7 @@ flowchart LR
     C --> D[Async Python / HTTPX]
     D --> E[Options Processing & Trade Logic]
     E --> F[Telegram Automation]
-    E --> G[Flask Backend]
+    E --> G[Backend Integration]
     F --> H[Public / Private Channels]
     F --> I[Subscribers & Referrals]
     G --> J[(SQLite)]
@@ -89,22 +89,20 @@ flowchart LR
 |---|---|
 | `login.py` | Authorized Webull browser login and local cookie capture |
 | `gethttpx.py` | Network inspection for Webull option endpoints |
-| `spx1.py` | Main SPX/index options and Telegram automation workflow |
-| `camel_company.py` | Equity-option workflow and Telegram automation |
+| `spx1.py` | Main SPX/index options data processing and Telegram workflow |
+| `camel_company.py` | Equity-options workflow and Telegram automation |
 | `payment_bot.py` | Telegram subscriptions, referrals, access and user lifecycle |
 | `payment_bot1.py` | Indicator subscription/payment bot |
-| `app.py` | Flask dashboard/API, settings, users, payments and operational workflows |
 | `app_integration.py` | Telegram WebApp/backend integration |
 | `update_db.py` | Local database maintenance/migration helper |
 
 ## Markets / Instruments
 
-The code contains workflows for index and equity options, including SPX/SPY/QQQ/NDX and selected U.S. equities.
+The code contains workflows for index and equity options, including SPX, SPY, QQQ, NDX, and selected U.S. equities.
 
 ## Tech Stack
 
 - **Python**
-- **Flask**
 - **Telegram Bot API / python-telegram-bot**
 - **Webull web-session integration**
 - **HTTPX / async I/O**
@@ -148,13 +146,13 @@ This repository is a **sanitized portfolio snapshot**. The following were remove
 - Trade-history data generated in production
 - Private Git history
 - Cached Python bytecode
-- Environment-specific media/assets
+- Legacy/debug scripts not required to demonstrate the backend contribution
 
 See `SECURITY.md`.
 
 ## Repository Note
 
-Some production-oriented modules originated in a live operational environment and therefore contain environment-specific logic. This public version is intended to demonstrate backend architecture, API integration, automation, and engineering responsibilities without publishing operational credentials or customer data.
+This public version is intended to demonstrate backend architecture, API integration, authenticated session handling, market-data processing, and Telegram automation without publishing operational credentials or customer data.
 
 ## Author / Contribution
 
