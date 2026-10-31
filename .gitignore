@@ -1,0 +1,40 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+cookies.json
+settings.json
+
+# Databases and user data
+*.db
+*.sqlite
+*.sqlite3
+
+# Captures / logs / generated trading data
+webull_option_network_capture.json
+net_log.jsonl
+*_trades.csv
+*_trades.json
+trades.csv
+trades.json
+*.log
+
+# Generated/uploaded media
+static/uploads/*
+static/scheduled/*
+static/trade_templates/archive/*
+static/trade_templates/pending/*
+!static/uploads/.gitkeep
+!static/scheduled/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

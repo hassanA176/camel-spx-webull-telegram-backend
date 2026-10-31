@@ -1,0 +1,24 @@
+{
+  "opacity": 70,
+  "schedule_time": "23:00",
+  "allowed_user_ids": [],
+  "monitor_increase": 0.1,
+  "closing_messages": {
+    "list": [
+      "Session closed successfully"
+    ],
+    "selected": "Session closed successfully"
+  },
+  "scheduled_messages": [],
+  "referral_settings": {
+    "first_time_bonus": 5,
+    "renewal_bonus": 3
+  },
+  "packages": [],
+  "indicator_packages": [],
+  "report_settings": {
+    "main_title": "Trading Bot Reports",
+    "subtitle": "Telegram trading alerts",
+    "font_size_main_title": "35"
+  }
+}

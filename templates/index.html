@@ -1,0 +1,1177 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CAMEL SPX • منصة التداول الذكية</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Orbitron:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --surface-0: #04060b;
+      --surface-1: #080c18;
+      --surface-2: #0e1426;
+      --glass: rgba(20, 28, 52, 0.65);
+      --glass-strong: rgba(12, 18, 38, 0.88);
+      --cyan: #00e5ff;
+      --cyan-soft: rgba(0, 229, 255, 0.1);
+      --purple: #9b6cff;
+      --purple-soft: rgba(155, 108, 255, 0.12);
+      --gold: #f5c95c;
+      --text-primary: #f5f7ff;
+      --text-secondary: rgba(245, 247, 255, 0.65);
+      --text-tertiary: rgba(245, 247, 255, 0.38);
+      --border: rgba(255, 255, 255, 0.06);
+      --border-bright: rgba(255, 255, 255, 0.12);
+      --f-display: "Orbitron", sans-serif;
+      --f-body: "Cairo", sans-serif;
+      --f-mono: "JetBrains Mono", monospace;
+      --f-tech: "Rajdhani", sans-serif;
+    }
+
+    /* ─── Light scheme: warm, paper-like, refined for long reading ─── */
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: var(--f-body);
+      background: var(--surface-0);
+      color: var(--text-primary);
+      overflow: hidden;
+      transition:
+        background 0.3s ease,
+        color 0.3s ease;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 0%,
+          rgba(0, 229, 255, 0.08),
+          transparent 60%),
+        radial-gradient(ellipse 70% 50% at 80% 100%,
+          rgba(155, 108, 255, 0.05),
+          transparent 60%),
+        linear-gradient(180deg, #04060b 0%, #080c18 50%, #04060b 100%);
+      transition: background 0.3s ease;
+    }
+
+    /* ─── Light scheme via filter inversion ─────────────────────────────
+   Same approach as inner pages: invert + hue-rotate the entire body to
+   flip every dark surface to light while keeping colour accents stable.
+   The iframe gets a counter-invert so its already-light content (it has
+   its own filter applied internally) is not double-inverted by us. */
+    html[data-scheme="light"] body {
+      filter: invert(0.93) hue-rotate(180deg);
+    }
+
+    html[data-scheme="light"] iframe,
+    html[data-scheme="light"] img,
+    html[data-scheme="light"] video {
+      filter: invert(1) hue-rotate(180deg);
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(0, 229, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 229, 255, 0.025) 1px, transparent 1px);
+      background-size: 50px 50px;
+      mask-image: radial-gradient(ellipse at center,
+          black 40%,
+          transparent 80%);
+      transition: background-image 0.3s ease;
+    }
+
+    /* ─── Standalone iframe (landing + login) ─── */
+    .standalone {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: transparent;
+      z-index: 50;
+    }
+
+    body[data-view="app"] .standalone {
+      display: none;
+    }
+
+    /* ─── App shell ─── */
+    .shell {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    body:not([data-view="app"]) .shell {
+      display: none;
+    }
+
+    .sb {
+      width: 280px;
+      flex-shrink: 0;
+      background: var(--glass-strong);
+      border-left: 1px solid var(--border);
+      backdrop-filter: blur(24px) saturate(140%);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 10;
+    }
+
+    .sb-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 20px 22px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sb-brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 0;
+      background: transparent;
+      border: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cyan);
+      box-shadow: none;
+      overflow: visible;
+    }
+
+    .sb-brand-mark img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+      padding: 0;
+      transform: none;
+    }
+
+    .sb-brand-mark img + svg {
+      display: none;
+    }
+
+    .sb-brand-mark svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .sb-brand-text {
+      line-height: 1.2;
+    }
+
+    .sb-brand-name {
+      font-family: var(--f-display);
+      font-weight: 800;
+      font-size: 16px;
+      letter-spacing: 0.8px;
+    }
+
+    .sb-brand-sub {
+      font-family: var(--f-tech);
+      font-size: 9.5px;
+      letter-spacing: 2.5px;
+      color: var(--cyan);
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .sb-scheme-toggle {
+      margin-right: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .sb-scheme-toggle:hover {
+      background: rgba(0, 229, 255, 0.08);
+      border-color: rgba(0, 229, 255, 0.3);
+      color: var(--cyan);
+      transform: rotate(15deg);
+    }
+
+    .sb-scheme-toggle svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .sb-scheme-toggle .icon-sun {
+      display: none;
+    }
+
+    .sb-scheme-toggle .icon-moon {
+      display: block;
+    }
+
+    html[data-scheme="light"] .sb-scheme-toggle .icon-sun {
+      display: block;
+    }
+
+    html[data-scheme="light"] .sb-scheme-toggle .icon-moon {
+      display: none;
+    }
+
+    html[data-scheme="light"] .sb-scheme-toggle {
+      background: rgba(15, 20, 48, 0.04);
+    }
+
+    html[data-scheme="light"] .sb-scheme-toggle:hover {
+      background: rgba(245, 201, 92, 0.12);
+      border-color: rgba(245, 201, 92, 0.4);
+      color: #c99528;
+    }
+
+    .sb-mode {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+      margin: 14px 16px;
+      padding: 5px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .sb-mode-btn {
+      padding: 9px 97px;
+      background: transparent;
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+      font-family: var(--f-display);
+      font-weight: 700;
+      font-size: 10.5px;
+      letter-spacing: 1px;
+      color: var(--text-tertiary);
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .sb-mode-btn svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    .sb-mode-btn:hover {
+      color: var(--text-secondary);
+    }
+
+    .sb-mode-btn.active[data-mode="admin"] {
+      background: linear-gradient(135deg,
+          rgba(0, 229, 255, 0.2),
+          rgba(0, 229, 255, 0.05));
+      color: var(--cyan);
+      box-shadow: 0 0 0 1px rgba(0, 229, 255, 0.3);
+    }
+
+    .sb-mode-btn.active[data-mode="client"] {
+      background: linear-gradient(135deg,
+          rgba(155, 108, 255, 0.2),
+          rgba(155, 108, 255, 0.05));
+      color: #c8a8ff;
+      box-shadow: 0 0 0 1px rgba(155, 108, 255, 0.3);
+    }
+
+    .sb-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 12px 16px;
+    }
+
+    .sb-nav::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .sb-nav::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 3px;
+    }
+
+    .sb-group-label {
+      font-family: var(--f-tech);
+      font-size: 9.5px;
+      font-weight: 700;
+      color: var(--text-tertiary);
+      letter-spacing: 2.2px;
+      text-transform: uppercase;
+      padding: 14px 10px 6px;
+    }
+
+    .sb-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      border: 1px solid transparent;
+      margin-bottom: 2px;
+      transition: all 0.15s;
+      font-family: var(--f-body);
+    }
+
+    .sb-item svg {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+      opacity: 0.55;
+    }
+
+    .sb-item .sb-label {
+      flex: 1;
+    }
+
+    .sb-item .sb-pill {
+      font-family: var(--f-mono);
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(255, 184, 0, 0.12);
+      color: #ffb800;
+      border: 1px solid rgba(255, 184, 0, 0.2);
+    }
+
+    .sb-item:hover {
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-primary);
+    }
+
+    .sb-item:hover svg {
+      opacity: 0.85;
+    }
+
+    .sb-item.active {
+      background: linear-gradient(90deg, var(--cyan-soft), transparent);
+      color: var(--cyan);
+      border-color: rgba(0, 229, 255, 0.2);
+    }
+
+    .sb-item.active svg {
+      color: var(--cyan);
+      opacity: 1;
+    }
+
+    body[data-mode="client"] .sb-item.active {
+      background: linear-gradient(90deg, var(--purple-soft), transparent);
+      color: #c8a8ff;
+      border-color: rgba(155, 108, 255, 0.22);
+    }
+
+    body[data-mode="client"] .sb-item.active svg {
+      color: #c8a8ff;
+    }
+
+    .sb-foot {
+      padding: 14px 16px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sb-foot-ava {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #00e5ff, #9b6cff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--f-display);
+      font-weight: 800;
+      color: #04060b;
+      font-size: 13px;
+    }
+
+    .sb-foot-info {
+      flex: 1;
+      line-height: 1.3;
+      min-width: 0;
+    }
+
+    .sb-foot-name {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .sb-foot-role {
+      font-family: var(--f-mono);
+      font-size: 10.5px;
+      color: var(--text-tertiary);
+    }
+
+    .sb-foot-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #00ff94;
+      box-shadow: 0 0 8px rgba(0, 255, 148, 0.7);
+      flex-shrink: 0;
+    }
+
+    .sb-foot-logout {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: rgba(255, 61, 92, 0.08);
+      border: 1px solid rgba(255, 61, 92, 0.18);
+      color: #ff6b7f;
+      cursor: pointer;
+      transition: all 0.15s;
+      flex-shrink: 0;
+      margin-right: 6px;
+    }
+
+    .sb-foot-logout:hover {
+      background: rgba(255, 61, 92, 0.18);
+      border-color: rgba(255, 61, 92, 0.4);
+      color: #ff3d5c;
+    }
+
+    .sb-foot-logout svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: transparent;
+      position: relative;
+    }
+
+    .frame-wrap {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: transparent;
+      display: block;
+    }
+
+    .loading {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 18px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.25s;
+      z-index: 5;
+    }
+
+    .loading.show {
+      opacity: 1;
+      pointer-events: auto;
+      background: rgba(4, 6, 11, 0.6);
+      backdrop-filter: blur(4px);
+    }
+
+    .loading-mark {
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
+      background: linear-gradient(135deg,
+          rgba(0, 229, 255, 0.18),
+          rgba(155, 108, 255, 0.1));
+      border: 1px solid rgba(0, 229, 255, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cyan);
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+
+    .loading-mark svg {
+      width: 30px;
+      height: 30px;
+    }
+
+    .loading-text {
+      font-family: var(--f-tech);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-tertiary);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 0.85;
+      }
+
+      50% {
+        transform: scale(1.05);
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 880px) {
+      .sb {
+        width: 64px;
+      }
+
+      .sb-brand-text,
+      .sb-mode,
+      .sb-label,
+      .sb-pill,
+      .sb-foot-info,
+      .sb-foot-dot,
+      .sb-group-label {
+        display: none;
+      }
+
+      .sb-brand {
+        padding: 18px 11px;
+        justify-content: center;
+      }
+
+      .sb-item {
+        justify-content: center;
+        padding: 11px 0;
+      }
+
+      .sb-foot {
+        justify-content: center;
+        padding: 14px 0;
+      }
+    }
+  </style>
+  <script>
+    window.CAMEL_FORCE_REAL = true;
+  </script>
+</head>
+
+<body data-view="landing" data-mode="admin">
+  <!-- ─── Shared SVG sprite ─── -->
+  <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-camel" viewBox="0 0 32 32">
+        <path d="M6 22c0-3 1-5 3-6.5C10 12 11 9 14 8.5c1.5-.3 3 .2 4 1 .8-.6 1.8-.9 2.8-.6 1.5.4 2.5 1.6 2.8 3.1.1.8-.1 1.5-.5 2.1 1.2.3 2.2 1.2 2.6 2.4.3 1 .1 2-.4 2.8-.4.6-1 1-1.6 1.2v3l-2 1v-3h-1.5l-.5 3h-2l.5-3h-7l-.5 3h-2l.5-3c-1.7-.2-3.2-1.5-3.7-3.5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+        <circle cx="20.5" cy="13" r="0.9" fill="currentColor" />
+      </symbol>
+      <symbol id="i-home" viewBox="0 0 24 24">
+        <rect x="3" y="3" width="8" height="8" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7" />
+        <rect x="13" y="3" width="8" height="5" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7" />
+        <rect x="3" y="13" width="8" height="8" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7" />
+        <rect x="13" y="10" width="8" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7" />
+      </symbol>
+      <symbol id="i-users" viewBox="0 0 24 24">
+        <circle cx="9" cy="8" r="3.5" fill="none" stroke="currentColor" stroke-width="1.7" />
+        <path d="M3 20c0-3.5 3-6 6-6s6 2.5 6 6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+        <circle cx="17" cy="9" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5" />
+        <path d="M15 15c3 0 6 1.5 6 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+      </symbol>
+      <symbol id="i-diamond" viewBox="0 0 24 24">
+        <path d="M6 3h12l4 6-10 12L2 9l4-6z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+      </symbol>
+      <symbol id="i-coin" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7" />
+        <path d="M15 9c0-1.5-1.5-2-3-2s-3 .5-3 2 1.5 2 3 2 3 .5 3 2-1.5 2-3 2-3-.5-3-2M12 6v2M12 16v2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+      </symbol>
+      <symbol id="i-bell" viewBox="0 0 24 24">
+        <path d="M6 8a6 6 0 1112 0c0 7 3 7 3 9H3c0-2 3-2 3-9z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+        <path d="M10 21a2 2 0 004 0" fill="none" stroke="currentColor" stroke-width="1.7" />
+      </symbol>
+      <symbol id="i-cog" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.7" />
+        <path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+      </symbol>
+      <symbol id="i-shield" viewBox="0 0 24 24">
+        <path d="M12 3l8 3v6c0 4.5-3.5 8-8 9-4.5-1-8-4.5-8-9V6l8-3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+      </symbol>
+      <symbol id="i-pulse" viewBox="0 0 24 24">
+        <path d="M3 12h3l3-9 6 18 3-9h3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      </symbol>
+      <symbol id="i-cam-tg" viewBox="0 0 24 24">
+        <path d="M3 11l18-8-7 18-2-8-9-2z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+      </symbol>
+      <symbol id="i-palette" viewBox="0 0 24 24">
+        <path d="M12 3a9 9 0 100 18 2 2 0 002-2 2 2 0 012-2h2a3 3 0 003-3 8 8 0 00-9-11z" fill="none" stroke="currentColor" stroke-width="1.7" />
+        <circle cx="8" cy="10" r="1.5" fill="currentColor" />
+        <circle cx="12" cy="7" r="1.5" fill="currentColor" />
+        <circle cx="16" cy="10" r="1.5" fill="currentColor" />
+      </symbol>
+    </defs>
+  </svg>
+
+  <!-- ─── Standalone iframe (landing/login views) ─── -->
+  <iframe id="soloFrame" class="standalone" title="CAMEL SPX"></iframe>
+
+  <!-- ─── App shell (sidebar + content iframe) ─── -->
+  <div class="shell">
+    <aside class="sb">
+      <div class="sb-brand">
+        <div class="sb-brand-mark">
+          <img src="/static/images/custom_logo_mark.png?v=logo" alt="CAMEL SPX logo" onerror="this.hidden=true;this.nextElementSibling.style.display='block'">
+          <svg>
+            <use href="#i-camel" />
+          </svg>
+        </div>
+        <div class="sb-brand-text">
+          <div class="sb-brand-name">CAMEL SPX</div>
+          <div class="sb-brand-sub">// COMMAND</div>
+        </div>
+        <button class="sb-scheme-toggle" id="schemeToggle" title="تبديل الوضع النهاري/الليلي" aria-label="تبديل الوضع">
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+          </svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4" />
+            <line x1="12" y1="2" x2="12" y2="5" />
+            <line x1="12" y1="19" x2="12" y2="22" />
+            <line x1="4.22" y1="4.22" x2="6.34" y2="6.34" />
+            <line x1="17.66" y1="17.66" x2="19.78" y2="19.78" />
+            <line x1="2" y1="12" x2="5" y2="12" />
+            <line x1="19" y1="12" x2="22" y2="12" />
+            <line x1="4.22" y1="19.78" x2="6.34" y2="17.66" />
+            <line x1="17.66" y1="6.34" x2="19.78" y2="4.22" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="sb-mode">
+        <button class="sb-mode-btn active" data-mode="admin" onclick="switchMode('admin')">
+          <svg>
+            <use href="#i-shield" />
+          </svg><span>الإدارة</span>
+        </button>
+      </div>
+
+      <nav class="sb-nav">
+        <div class="admin-group">
+          <div class="sb-group-label">لوحات التحكم</div>
+          <div class="sb-item active" data-src="لوحة-الإدارة.html" onclick="navTo(this)">
+            <svg>
+              <use href="#i-home" />
+            </svg><span class="sb-label">الداش الرئيسي</span>
+          </div>
+          <div class="sb-item" data-src="العملاء.html" onclick="navTo(this)">
+            <svg>
+              <use href="#i-users" />
+            </svg><span class="sb-label">العملاء</span>
+          </div>
+          <div class="sb-group-label">المعاملات</div>
+          <div class="sb-item" data-src="الاشتراكات.html" onclick="navTo(this)">
+            <svg>
+              <use href="#i-diamond" />
+            </svg><span class="sb-label">الاشتراكات</span>
+          </div>
+          <div class="sb-item" data-src="طلبات-السحب.html" onclick="navTo(this)">
+            <svg>
+              <use href="#i-coin" />
+            </svg><span class="sb-label">طلبات السحب</span>
+          </div>
+          <div class="sb-item" data-src="لوحة-الإحالات.html" onclick="navTo(this)">
+            <svg>
+              <use href="#i-pulse" />
+            </svg><span class="sb-label">الإحالات</span>
+          </div>
+          <div class="sb-group-label">المحتوى</div>
+          <div class="sb-item" data-src="الإشعارات.html" onclick="navTo(this)">
+            <svg>
+              <use href="#i-bell" />
+            </svg><span class="sb-label">الإشعارات والعروض</span>
+          </div>
+          <div class="sb-group-label">النظام</div>
+          <div class="sb-item" data-src="الإعدادات.html" onclick="navTo(this)">
+            <svg>
+              <use href="#i-cog" />
+            </svg><span class="sb-label">الإعدادات</span>
+          </div>
+          <div class="sb-item" data-src="الثيمات.html" onclick="navTo(this)">
+            <svg>
+              <use href="#i-palette" />
+            </svg><span class="sb-label">الثيمات</span>
+          </div>
+          <div class="sb-item" data-src="سجل-الأدمن.html" onclick="navTo(this)">
+            <svg>
+              <use href="#i-shield" />
+            </svg><span class="sb-label">سجل الأدمن</span>
+          </div>
+        </div>
+
+        <div class="client-group" style="display: none">
+          <div class="sb-group-label">لوحة العميل</div>
+          <div class="sb-item" data-src="لوحتي.html" onclick="navTo(this)">
+            <svg>
+              <use href="#i-home" />
+            </svg><span class="sb-label">لوحتي</span>
+          </div>
+          <div class="sb-item" data-src="صفقاتي.html" onclick="navTo(this)">
+            <svg>
+              <use href="#i-pulse" />
+            </svg><span class="sb-label">صفقاتي</span>
+          </div>
+          <div class="sb-group-label">الحساب</div>
+          <div class="sb-item" data-src="اشتراكي.html" onclick="navTo(this)">
+            <svg>
+              <use href="#i-diamond" />
+            </svg><span class="sb-label">اشتراكي</span>
+          </div>
+          <div class="sb-item" data-src="محفظتي.html" onclick="navTo(this)">
+            <svg>
+              <use href="#i-coin" />
+            </svg><span class="sb-label">المحفظة</span>
+          </div>
+          <div class="sb-item" data-src="إحالتي.html" onclick="navTo(this)">
+            <svg>
+              <use href="#i-users" />
+            </svg><span class="sb-label">برنامج الإحالة</span>
+          </div>
+          <div class="sb-group-label">المظهر</div>
+          <div class="sb-item" data-src="الثيمات.html" onclick="navTo(this)">
+            <svg>
+              <use href="#i-palette" />
+            </svg><span class="sb-label">الثيمات</span>
+          </div>
+        </div>
+      </nav>
+
+      <div class="sb-foot">
+        <div class="sb-foot-ava" id="footAva">م.ع</div>
+        <div class="sb-foot-info">
+          <div class="sb-foot-name" id="footName">المدير العام</div>
+          <div class="sb-foot-role" id="footRole">admin@camelspx.sa</div>
+        </div>
+        <button class="sb-foot-logout" id="logoutBtn" title="تسجيل الخروج">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+        </button>
+        <div class="sb-foot-dot"></div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="frame-wrap">
+        <iframe class="iframe" id="appFrame" title="CAMEL SPX"></iframe>
+        <div class="loading" id="loading">
+          <div class="loading-mark">
+            <svg>
+              <use href="#i-camel" />
+            </svg>
+          </div>
+          <div class="loading-text">CAMEL SPX • LOADING</div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    /* ─── Embedded page contents ─── */
+    /* ─── Page contents now live in external files: static/pages/*.html ───
+       Each page is fetched on demand, then the active theme is injected
+       before it is dropped into the iframe via srcdoc (identical rendering
+       to the previous inline version). */
+    const PAGES_BASE = "/pages/";
+    const PAGE_KEYS = new Set([
+      "لوحة-الإدارة.html",
+      "العملاء.html",
+      "الاشتراكات.html",
+      "طلبات-السحب.html",
+      "لوحة-الإحالات.html",
+      "الإشعارات.html",
+      "الإعدادات.html",
+      "سجل-الأدمن.html",
+      "لوحتي.html",
+      "صفقاتي.html",
+      "اشتراكي.html",
+      "محفظتي.html",
+      "إحالتي.html",
+      "الثيمات.html"
+    ]);
+const PAGE_CACHE = {};
+
+async function loadPage(name) {
+  const res = await fetch(
+    PAGES_BASE + encodeURIComponent(name) + '?_t=' + Date.now(),
+    { cache: 'no-store' }
+  );
+
+  if (!res.ok) throw new Error("تعذّر تحميل الصفحة: " + name);
+  return await res.text();
+}
+    const DEFAULT_ADMIN = "لوحة-الإدارة.html";
+    const DEFAULT_CLIENT = "لوحتي.html";
+    /* ─── Theme palettes ─── Single set of accents per theme. In light mode the
+   body filter inverts dark surfaces to light while keeping these accents
+   visually stable thanks to the matched hue-rotate. */
+    const THEMES = {
+      cyan: {
+        "--cyan": "#00E5FF",
+        "--cyan-soft": "rgba(0,229,255,0.1)",
+        "--cyan-dim": "#0099BB",
+        "--purple": "#9B6CFF",
+        "--purple-soft": "rgba(155,108,255,0.12)",
+      },
+      gold: {
+        "--cyan": "#F5C95C",
+        "--cyan-soft": "rgba(245,201,92,0.1)",
+        "--cyan-dim": "#C99528",
+        "--purple": "#FFB800",
+        "--purple-soft": "rgba(255,184,0,0.12)",
+      },
+      purple: {
+        "--cyan": "#C8A8FF",
+        "--cyan-soft": "rgba(200,168,255,0.1)",
+        "--cyan-dim": "#9B6CFF",
+        "--purple": "#00E5FF",
+        "--purple-soft": "rgba(0,229,255,0.12)",
+      },
+      emerald: {
+        "--cyan": "#00FF94",
+        "--cyan-soft": "rgba(0,255,148,0.1)",
+        "--cyan-dim": "#00B86E",
+        "--purple": "#00E5FF",
+        "--purple-soft": "rgba(0,229,255,0.12)",
+      },
+      crimson: {
+        "--cyan": "#FF3D5C",
+        "--cyan-soft": "rgba(255,61,92,0.1)",
+        "--cyan-dim": "#C71832",
+        "--purple": "#FFB800",
+        "--purple-soft": "rgba(255,184,0,0.12)",
+      },
+    };
+    let activeTheme = (function() {
+      try {
+        return localStorage.getItem("camel_theme") || "cyan";
+      } catch (_) {
+        return "cyan";
+      }
+    })();
+    if (!THEMES[activeTheme]) activeTheme = "cyan";
+    /* ─── Color scheme (dark/light) ─── */
+    let activeScheme = (function() {
+      try {
+        return localStorage.getItem("camel_scheme") || "dark";
+      } catch (_) {
+        return "dark";
+      }
+    })();
+    if (activeScheme !== "light" && activeScheme !== "dark")
+      activeScheme = "dark";
+    document.documentElement.dataset.scheme = activeScheme;
+
+    function themeVars() {
+      return THEMES[activeTheme] || THEMES.cyan;
+    }
+
+    function themeCSS() {
+      let css = ":root{";
+      const v = themeVars();
+      for (const k in v) css += k + ":" + v[k] + ";";
+      return css + "}";
+    }
+
+    function themeInject() {
+      // Style block + a tiny inline marker the inner page can read on first paint
+      return (
+        '<style id="camel-theme">' +
+        themeCSS() +
+        "</style>" +
+        "<script>document.documentElement.dataset.activeTheme=" +
+        JSON.stringify(activeTheme) +
+        ";" +
+        "document.documentElement.dataset.scheme=" +
+        JSON.stringify(activeScheme) +
+        ";<\/script>"
+      );
+    }
+
+    function applyThemeToParent() {
+      const v = themeVars();
+      for (const k in v) document.documentElement.style.setProperty(k, v[k]);
+    }
+
+    function applyThemeToFrame(f) {
+      if (!f || !f.contentWindow) return;
+      try {
+        f.contentWindow.postMessage({
+            type: "camel:apply-theme",
+            vars: themeVars(),
+            themeKey: activeTheme,
+          },
+          "*",
+        );
+      } catch (_) {}
+    }
+
+    function applySchemeToFrame(f) {
+      if (!f || !f.contentWindow) return;
+      try {
+        f.contentWindow.postMessage({
+            type: "camel:apply-scheme",
+            scheme: activeScheme
+          },
+          "*",
+        );
+      } catch (_) {}
+    }
+
+    function injectTheme(html) {
+      // Insert the theme style + marker right before </head>, AFTER all build-time
+      // injections (so it overrides every prior :root rule).
+      return html.replace("</head>", themeInject() + "</head>");
+    }
+    /* ─── DOM refs ─── */
+    const body = document.body;
+    const solo = document.getElementById("soloFrame");
+    const frame = document.getElementById("appFrame");
+    const loading = document.getElementById("loading");
+    /* Apply theme to the parent shell on startup */
+    applyThemeToParent();
+    /* ─── View switching ─── */
+    function showLanding() {
+      body.setAttribute("data-view", "landing");
+      loadPage("landing.html").then((h) => { solo.srcdoc = injectTheme(h); });
+      document.title = "CAMEL SPX • منصة التداول الذكية";
+    }
+
+    function showLogin() {
+      body.setAttribute("data-view", "login");
+      loadPage("login.html").then((h) => { solo.srcdoc = injectTheme(h); });
+      document.title = "CAMEL SPX • تسجيل الدخول";
+    }
+
+    function showApp(initial) {
+      body.setAttribute("data-view", "app");
+      solo.srcdoc = "about:blank";
+      const target =
+        initial ||
+        (body.getAttribute("data-mode") === "client" ?
+          DEFAULT_CLIENT :
+          DEFAULT_ADMIN);
+      const item = document.querySelector(
+        '.sb-item[data-src="' + target + '"]',
+      );
+      if (item) navTo(item);
+      document.title = "CAMEL SPX • لوحة التحكم";
+    }
+    /* ─── Sidebar navigation (in-app) ─── */
+    function navTo(el) {
+      const src = el.getAttribute("data-src");
+      if (!src || !PAGE_KEYS.has(src)) return;
+      document
+        .querySelectorAll(".sb-item")
+        .forEach((i) => i.classList.remove("active"));
+      el.classList.add("active");
+      loading.classList.add("show");
+      loadPage(src).then((h) => { frame.srcdoc = injectTheme(h); });
+    }
+    frame.addEventListener("load", () => {
+      setTimeout(() => loading.classList.remove("show"), 80);
+    });
+    let lockedRole = "";
+    /* ─── Admin/Client mode toggle ─── */
+    function switchMode(mode) {
+      if (lockedRole === "client" && mode !== "client") return;
+      body.setAttribute("data-mode", mode);
+      document.querySelectorAll(".sb-mode-btn").forEach((b) => {
+        b.classList.toggle("active", b.getAttribute("data-mode") === mode);
+      });
+      document.querySelector(".admin-group").style.display =
+        mode === "admin" ? "" : "none";
+      document.querySelector(".client-group").style.display =
+        mode === "client" ? "" : "none";
+      document.querySelector(".sb-mode").style.display =
+        mode === "client" ? "none" : "";
+      if (mode === "admin") {
+        document.getElementById("footAva").textContent =
+          sessionInitials || "م.ع";
+        document.getElementById("footName").textContent =
+          sessionUser || "المدير العام";
+        document.getElementById("footRole").textContent = "admin@camelspx.sa";
+        const dash = document.querySelector(
+          '.sb-item[data-src="' + DEFAULT_ADMIN + '"]',
+        );
+        if (dash) navTo(dash);
+      } else {
+        document.getElementById("footAva").textContent = "س.م";
+        document.getElementById("footName").textContent = "سعد المطيري";
+        document.getElementById("footRole").textContent = "BSQR-A4F92K7Q";
+        const cd = document.querySelector(
+          '.sb-item[data-src="' + DEFAULT_CLIENT + '"]',
+        );
+        if (cd) navTo(cd);
+      }
+    }
+    /* ─── Session ─── */
+    let sessionUser = null,
+      sessionInitials = null;
+    /* ─── Logout ─── */
+    /* ─── Logout ─── */
+    document
+      .getElementById("logoutBtn")
+      .addEventListener("click", async () => {
+        try {
+          await fetch("/api/logout", {
+            method: "POST"
+          });
+        } catch (e) {}
+        sessionStorage.removeItem("camelspx_user");
+        sessionStorage.removeItem("camelspx_role");
+        sessionUser = null;
+        sessionInitials = null;
+        document.getElementById("footName").textContent = "المدير العام";
+        document.getElementById("footRole").textContent = "admin@camelspx.sa";
+        document.getElementById("footAva").textContent = "م.ع";
+        showLanding();
+      });
+    /* ─── Scheme toggle (dark ↔ light) ─── */
+    document.getElementById("schemeToggle").addEventListener("click", () => {
+      activeScheme = activeScheme === "dark" ? "light" : "dark";
+      document.documentElement.dataset.scheme = activeScheme;
+      try {
+        localStorage.setItem("camel_scheme", activeScheme);
+      } catch (_) {}
+      // Re-apply theme so the parent + iframes pick the new scheme's accent variants
+      applyThemeToParent();
+      applySchemeToFrame(frame);
+      applyThemeToFrame(frame);
+      applySchemeToFrame(solo);
+      applyThemeToFrame(solo);
+    });
+    /* ─── Message bus: receives nav, auth, theme requests from inner iframes ─── */
+    window.addEventListener("message", (ev) => {
+      const d = ev && ev.data;
+      if (!d || typeof d !== "object") return;
+      if (d.type === "camel:go" && d.target === "login") {
+        showLogin();
+      } else if (d.type === "camel:auth") {
+        const role = d.role === "client" ? "client" : "admin";
+        lockedRole = role === "client" ? "client" : "";
+        if (role === "client" && d.chat_id) {
+          try {
+            localStorage.setItem("camelspx_chat_id", String(d.chat_id));
+          } catch (_) {}
+        }
+        if (d.user) {
+          sessionUser = d.user;
+          sessionInitials = d.user.trim().slice(0, 2).toUpperCase();
+          document.getElementById("footName").textContent = d.user;
+          document.getElementById("footRole").textContent =
+            role === "client" ? ("#" + (d.chat_id || "")) : (d.user.indexOf("@") > -1 ? d.user : d.user + "@camelspx.sa");
+          document.getElementById("footAva").textContent = sessionInitials;
+        }
+        body.setAttribute("data-mode", role);
+        document.querySelectorAll(".sb-mode-btn").forEach((b) => {
+          b.classList.toggle("active", b.getAttribute("data-mode") === role);
+        });
+        document.querySelector(".admin-group").style.display = role === "admin" ? "" : "none";
+        document.querySelector(".client-group").style.display = role === "client" ? "" : "none";
+        document.querySelector(".sb-mode").style.display = role === "client" ? "none" : "";
+        showApp();
+      } else if (d.type === "camel:theme" && THEMES[d.theme]) {
+        activeTheme = d.theme;
+        try {
+          localStorage.setItem("camel_theme", activeTheme);
+        } catch (_) {}
+        applyThemeToParent();
+        applyThemeToFrame(frame);
+        applyThemeToFrame(solo);
+      } else if (d.type === "camelspx:navigate" && d.target) {
+        const item = document.querySelector(
+          '.sb-item[data-src="' + d.target + '"]',
+        );
+        if (item) navTo(item);
+      }
+    });
+    /* ─── Initial state ─── */
+    const initialPath = window.location.pathname || "";
+    const initialParams = new URLSearchParams(window.location.search || "");
+    const serverSession = {
+      role: {{ session.get('role', '')|tojson }},
+      user: {{ session.get('user', '')|tojson }},
+      chatId: {{ session.get('client_chat_id', '')|tojson }}
+    };
+    const initialChatId =
+      initialParams.get("chat_id") ||
+      (initialPath.startsWith("/client/") ? initialPath.split("/").filter(Boolean).pop() : "");
+    if (initialChatId) {
+      try {
+        localStorage.setItem("camelspx_chat_id", initialChatId);
+      } catch (_) {}
+    }
+    if (serverSession.role === "client") {
+      if (serverSession.chatId) {
+        try { localStorage.setItem("camelspx_chat_id", String(serverSession.chatId)); } catch (_) {}
+      }
+      body.setAttribute("data-mode", "client");
+      lockedRole = "client";
+      document.querySelectorAll(".sb-mode-btn").forEach((b) => {
+        b.classList.toggle("active", b.getAttribute("data-mode") === "client");
+      });
+      document.querySelector(".admin-group").style.display = "none";
+      document.querySelector(".client-group").style.display = "";
+      document.querySelector(".sb-mode").style.display = "none";
+      document.getElementById("footName").textContent = serverSession.user || "client";
+      document.getElementById("footRole").textContent = "#" + (serverSession.chatId || "");
+      showApp(DEFAULT_CLIENT);
+    } else if (initialPath === "/client" || initialPath.startsWith("/client/") || initialParams.get("client") === "1") {
+      showLogin();
+    } else if (serverSession.role === "admin") {
+      document.querySelector(".sb-mode").style.display = "";
+      showApp(DEFAULT_ADMIN);
+    } else {
+      showLanding();
+    }
+  </script>
+</body>
+
+</html>

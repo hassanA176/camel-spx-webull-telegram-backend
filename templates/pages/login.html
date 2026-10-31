@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAMEL SPX • تسجيل الدخول</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Orbitron:wght@500;600;700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --surface-0:#04060B;
+  --surface-1:#080C18;
+  --cyan:#00E5FF;
+  --purple:#9B6CFF;
+  --text-primary:#F5F7FF;
+  --text-secondary:rgba(245,247,255,0.65);
+  --text-tertiary:rgba(245,247,255,0.38);
+  --border:rgba(255,255,255,0.08);
+  --loss:#FF3D5C;
+  --f-display:'Orbitron', sans-serif;
+  --f-body:'Cairo', sans-serif;
+  --f-tech:'Rajdhani', sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:var(--f-body);background:var(--surface-0);color:var(--text-primary)}
+
+body{
+  display:flex;align-items:center;justify-content:center;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 30%, rgba(0,229,255,0.10), transparent 60%),
+    radial-gradient(ellipse 60% 50% at 50% 80%, rgba(155,108,255,0.08), transparent 60%),
+    linear-gradient(180deg, #04060B, #080C18);
+  position:relative;overflow:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+  background-size:50px 50px;
+  mask-image:radial-gradient(ellipse at center, black 30%, transparent 80%);
+}
+
+.card{
+  position:relative;z-index:1;
+  width:min(440px, 92vw);
+  background:rgba(12,18,38,0.78);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:38px 36px 32px;
+  backdrop-filter:blur(24px) saturate(140%);
+  box-shadow:0 24px 60px -20px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04),
+             0 0 80px -20px rgba(0,229,255,0.2);
+}
+.brand{display:flex;align-items:center;gap:14px;margin-bottom:30px;justify-content:center}
+.brand-mark{
+  width:54px;height:54px;border-radius:14px;
+  background:linear-gradient(135deg, rgba(0,229,255,0.18), rgba(155,108,255,0.12));
+  border:1px solid rgba(0,229,255,0.3);
+  display:flex;align-items:center;justify-content:center;color:var(--cyan);
+  box-shadow:0 0 24px -6px rgba(0,229,255,0.5);
+}
+.brand-mark svg{width:30px;height:30px}
+.brand-text{line-height:1.2}
+.brand-name{font-family:var(--f-display);font-weight:800;font-size:22px;letter-spacing:1px}
+.brand-sub{font-family:var(--f-tech);font-size:11px;letter-spacing:3px;color:var(--cyan);margin-top:3px;text-transform:uppercase}
+
+h1{
+  font-family:var(--f-display);font-weight:800;font-size:24px;
+  text-align:center;margin-bottom:6px;
+}
+.subtitle{
+  text-align:center;color:var(--text-secondary);font-size:13.5px;margin-bottom:28px;
+}
+
+label{
+  display:block;font-family:var(--f-tech);font-weight:700;font-size:11px;
+  color:var(--text-tertiary);letter-spacing:1.5px;text-transform:uppercase;
+  margin-bottom:8px;
+}
+input{
+  width:100%;padding:13px 16px;
+  background:rgba(0,0,0,0.35);
+  border:1px solid var(--border);
+  border-radius:10px;
+  color:var(--text-primary);font-family:var(--f-body);font-size:14.5px;
+  outline:none;transition:all 0.2s;
+  margin-bottom:18px;
+}
+input:focus{
+  border-color:rgba(0,229,255,0.5);
+  box-shadow:0 0 0 3px rgba(0,229,255,0.1);
+  background:rgba(0,0,0,0.5);
+}
+button[type="submit"]{
+  width:100%;padding:14px;
+  background:linear-gradient(135deg, #00E5FF, #0099BB);
+  color:#04060B;
+  border:none;border-radius:10px;
+  font-family:var(--f-display);font-weight:800;font-size:13px;letter-spacing:1px;
+  cursor:pointer;transition:all 0.2s;
+  text-transform:uppercase;
+  margin-top:8px;
+}
+button[type="submit"]:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 30px -8px rgba(0,229,255,0.5);
+}
+.flash{
+  background:rgba(255,61,92,0.12);
+  border:1px solid rgba(255,61,92,0.3);
+  color:var(--loss);
+  padding:11px 14px;
+  border-radius:8px;
+  font-size:13px;
+  margin-bottom:18px;
+  text-align:center;
+}
+.foot{
+  text-align:center;margin-top:24px;
+  color:var(--text-tertiary);font-size:11.5px;
+  font-family:var(--f-tech);letter-spacing:1.5px;
+}
+</style>
+
+</head>
+<body>
+
+<div class="card">
+  <div class="brand">
+    <div class="brand-mark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M6 8c-1 2-1 5 0 7 1 2 3 3 6 3s5-1 6-3c1-2 1-5 0-7"/>
+        <circle cx="10" cy="10" r="0.8" fill="currentColor"/>
+        <path d="M9 14c1 1 2 1 3 1s2 0 3-1" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="brand-text">
+      <div class="brand-name">CAMEL SPX</div>
+      <div class="brand-sub">// COMMAND</div>
+    </div>
+  </div>
+
+  <h1>تسجيل الدخول</h1>
+  <p class="subtitle">أدخل بيانات اعتمادك للوصول إلى لوحة الإدارة</p>
+
+  <div id="flash" class="flash" style="display:none"></div>
+
+  <form id="loginForm">
+    <label for="username">اسم المستخدم</label>
+    <input type="text" id="username" name="username" required autocomplete="username" autofocus>
+
+    <label for="password">كلمة المرور</label>
+    <input type="password" id="password" name="password" required autocomplete="current-password">
+
+    <button type="submit">دخول النظام</button>
+  </form>
+
+  <div class="foot">CAMEL SPX • SECURE ACCESS</div>
+</div>
+
+<script>
+  (function(){
+    const form  = document.getElementById('loginForm');
+    const flash = document.getElementById('flash');
+    const u     = document.getElementById('username');
+    const p     = document.getElementById('password');
+    const btn   = form.querySelector('button[type="submit"]');
+
+    function showError(msg){
+      flash.textContent = msg;
+      flash.style.display = 'block';
+    }
+
+    form.addEventListener('submit', async function(e){
+      e.preventDefault();
+      flash.style.display = 'none';
+      const user = u.value.trim();
+      const pass = p.value.trim();
+      if(!user || !pass){
+        showError('الرجاء إدخال اسم المستخدم وكلمة المرور');
+        return;
+      }
+      
+      btn.disabled = true;
+      btn.textContent = 'جاري التحقق...';
+
+      try {
+        const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({username: user, password: pass})
+        });
+        
+        const data = await response.json();
+        
+        if(response.ok && data.status === 'ok'){
+            sessionStorage.setItem('camelspx_user', data.user);
+            sessionStorage.setItem('camelspx_role', data.role || 'admin');
+            if (data.chat_id) localStorage.setItem('camelspx_chat_id', String(data.chat_id));
+            parent.postMessage({type:'camel:auth', user: data.user, role: data.role || 'admin', chat_id: data.chat_id}, '*');
+        } else {
+            showError(data.message || 'بيانات الدخول غير صحيحة');
+            btn.disabled = false;
+            btn.textContent = 'دخول النظام';
+        }
+      } catch (err) {
+        showError('حدث خطأ في الاتصال بالسيرفر');
+        btn.disabled = false;
+        btn.textContent = 'دخول النظام';
+      }
+    });
+  })();
+</script>
+
+</body>
+</html>

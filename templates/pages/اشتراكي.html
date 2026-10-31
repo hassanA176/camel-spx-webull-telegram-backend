@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>اشتراكي</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Orbitron:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{--panel:rgba(20,28,52,.68);--cyan:#00E5FF;--gold:#F5C95C;--profit:#00FF94;--text:#F5F7FF;--muted:rgba(245,247,255,.58);--border:rgba(255,255,255,.08);--display:'Orbitron',sans-serif}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at top,rgba(0,229,255,.08),transparent 60%),linear-gradient(180deg,#080C18,#04060B);color:var(--text);font-family:'Cairo',sans-serif;padding:28px}.page{max-width:1000px;margin:auto}.eyebrow{font:800 11px var(--display);letter-spacing:2px;color:var(--cyan)}h1{font:800 34px var(--display);margin:8px 0}.sub{color:var(--muted);margin:0 0 18px}.panel{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px}.row{display:flex;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.07);color:var(--muted)}.row b{color:var(--text)}.status{color:var(--profit);font-weight:900}.input{width:100%;background:rgba(0,0,0,.24);border:1px solid rgba(255,255,255,.09);border-radius:10px;color:var(--text);padding:12px;margin:8px 0}.btn{border:0;border-radius:10px;padding:10px 16px;font-weight:900;cursor:pointer;background:linear-gradient(135deg,#00E5FF,#0099BB);color:#03060b;margin-top:8px}
+</style>
+</head>
+<body>
+<main class="page">
+  <div class="eyebrow">SUBSCRIPTION</div><h1>اشتراكي</h1><p class="sub">تفاصيل اشتراكك الحالي من قاعدة البيانات.</p>
+  <section class="panel" id="details"></section>
+  <section class="panel" style="margin-top:18px">
+    <h3>تغيير كلمة المرور</h3>
+    <input class="input" id="newPass" type="password" placeholder="كلمة مرور جديدة">
+    <button class="btn" onclick="resetPassword()">حفظ</button>
+    <div class="status" id="status"></div>
+  </section>
+</main>
+<script>
+async function api(url,opt){const r=await fetch(url,Object.assign({credentials:'same-origin'},opt||{}));const j=await r.json();if(j.status&&j.status!=='ok')throw Error(j.message||'خطأ');return j}
+async function load(){const d=await api('/api/client/profile');const c=d.client||{};details.innerHTML=`<div class="row"><span>الباقة</span><b>${c.package||'بدون باقة'}</b></div><div class="row"><span>الحالة</span><b class="status">${c.status||''}</b></div><div class="row"><span>تاريخ الانتهاء</span><b>${c.end||''}</b></div><div class="row"><span>اسم المستخدم</span><b>${c.client_username||''}</b></div>`}
+async function resetPassword(){try{await api('/api/client/password/reset',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:newPass.value})});status.textContent='تم تغيير كلمة المرور';newPass.value=''}catch(e){status.textContent=e.message}}
+load().catch(e=>details.textContent=e.message);
+</script>
+</body>
+</html>

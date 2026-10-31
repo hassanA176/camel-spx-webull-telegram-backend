@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAMEL SPX - الإشعارات والعروض</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Orbitron:wght@600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --surface-0:#04060B;--surface-1:#080C18;--surface-2:#0E1426;
+  --glass:rgba(20,28,52,0.65);--glass-strong:rgba(12,18,38,0.88);
+  --cyan:#00E5FF;--gold:#F5C95C;--profit:#00FF94;--loss:#FF3D5C;
+  --text-primary:#F5F7FF;--text-secondary:rgba(245,247,255,0.66);
+  --text-tertiary:rgba(245,247,255,0.42);--border:rgba(255,255,255,0.07);
+  --f-display:'Orbitron',sans-serif;--f-body:'Cairo',sans-serif;--f-mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,229,255,0.06), transparent 60%),linear-gradient(180deg,#04060B,#080C18 55%,#04060B);color:var(--text-primary);font-family:var(--f-body);-webkit-font-smoothing:antialiased}
+body{padding:28px 32px}
+button,input,textarea{font-family:inherit}
+.page{max-width:1450px;margin:0 auto}
+.hero{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;margin-bottom:20px;flex-wrap:wrap}
+.eyebrow{font-family:var(--f-display);font-size:11px;letter-spacing:2px;color:var(--cyan);font-weight:800;margin-bottom:8px}
+h1{font-family:var(--f-display);font-size:32px;line-height:1.1;margin:0 0 8px;font-weight:800}
+.sub{margin:0;color:var(--text-secondary);font-size:14px;line-height:1.8;max-width:780px}
+.grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(360px,.75fr);gap:18px;align-items:start}
+.panel{background:var(--glass);border:1px solid var(--border);border-radius:14px;overflow:hidden;backdrop-filter:blur(18px) saturate(140%)}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.05)}
+.panel-title{font-weight:800;font-size:14px;letter-spacing:.3px}
+.panel-body{padding:18px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field{margin-bottom:14px}
+.label{display:block;font-size:12px;color:var(--text-tertiary);font-weight:800;margin-bottom:7px;letter-spacing:.5px}
+.input,.textarea{width:100%;background:rgba(0,0,0,.24);border:1px solid rgba(255,255,255,.08);border-radius:10px;color:var(--text-primary);outline:none;padding:12px 14px;font-size:14px}
+.input:focus,.textarea:focus{border-color:rgba(0,229,255,.42)}
+.textarea{min-height:190px;resize:vertical;line-height:1.8}
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.choice{position:relative;display:flex;align-items:center;gap:10px;min-height:58px;padding:10px 12px;border:1px solid rgba(255,255,255,.08);border-radius:12px;background:rgba(0,0,0,.2);cursor:pointer;transition:.16s ease}
+.choice:hover{border-color:rgba(0,229,255,.28)}
+.choice input{position:absolute;opacity:0;pointer-events:none}
+.check{width:20px;height:20px;border-radius:6px;border:1px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;color:#03060b;font-size:13px;font-weight:900;flex:0 0 auto}
+.choice input:checked + .check{background:var(--cyan);border-color:var(--cyan)}
+.choice input:checked + .check::after{content:'✓'}
+.choice-main{display:flex;flex-direction:column;gap:2px;min-width:0}
+.choice-name{font-weight:800;font-size:13px;color:var(--text-primary)}
+.choice-count{font-family:var(--f-mono);font-size:11px;color:var(--text-tertiary)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.btn{border:1px solid transparent;border-radius:10px;padding:11px 18px;font-weight:900;cursor:pointer;transition:.16s ease;display:inline-flex;align-items:center;gap:8px}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn-primary{background:linear-gradient(135deg,#00E5FF,#00A8C6);color:#03060b}
+.btn-gold{background:linear-gradient(135deg,#F5C95C,#C99528);color:#050609}
+.btn-ghost{background:rgba(255,255,255,.035);border-color:rgba(255,255,255,.1);color:var(--text-primary)}
+.btn-danger{background:rgba(255,61,92,.12);border-color:rgba(255,61,92,.35);color:var(--loss)}
+.btn:hover{transform:translateY(-1px)}
+.status{display:none;margin-top:14px;border-radius:10px;padding:10px 12px;font-size:13px;font-weight:700}
+.status.ok{display:block;background:rgba(0,255,148,.08);border:1px solid rgba(0,255,148,.24);color:var(--profit)}
+.status.err{display:block;background:rgba(255,61,92,.08);border:1px solid rgba(255,61,92,.24);color:var(--loss)}
+.mini{font-size:12px;color:var(--text-tertiary);line-height:1.7}
+.scheduled-list{display:flex;flex-direction:column;gap:10px}
+.scheduled-empty{padding:18px;border:1px dashed rgba(255,255,255,.12);border-radius:12px;color:var(--text-tertiary);text-align:center}
+.scheduled-item{border:1px solid rgba(255,255,255,.08);border-radius:12px;background:rgba(0,0,0,.2);padding:12px}
+.scheduled-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.time{font-family:var(--f-mono);font-weight:800;color:var(--cyan);direction:ltr}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.chip{display:inline-flex;align-items:center;min-height:24px;padding:4px 8px;border-radius:7px;background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.16);color:var(--cyan);font-size:11px;font-weight:800}
+.chip.group{background:rgba(245,201,92,.08);border-color:rgba(245,201,92,.18);color:var(--gold)}
+.snippet{color:var(--text-secondary);font-size:13px;line-height:1.7;white-space:pre-wrap;max-height:92px;overflow:hidden}
+.thumb{width:100%;max-height:150px;object-fit:cover;border-radius:10px;margin-top:10px;border:1px solid rgba(255,255,255,.08)}
+@media (max-width:960px){body{padding:20px}.grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}}
+</style>
+<script>
+(function(){
+  function applyVars(vars){
+    if(!vars) return;
+    for(const k in vars) document.documentElement.style.setProperty(k, vars[k]);
+  }
+  window.addEventListener('message', function(e){
+    const d = e && e.data;
+    if(!d || typeof d !== 'object') return;
+    if(d.type === 'camel:apply-theme') applyVars(d.vars);
+    if(d.type === 'camel:apply-scheme' && (d.scheme === 'dark' || d.scheme === 'light')) document.documentElement.dataset.scheme = d.scheme;
+  });
+})();
+</script>
+</head>
+<body>
+<main class="page">
+  <header class="hero">
+    <div>
+      <div class="eyebrow">PAYMENT BOT BROADCAST</div>
+      <h1>الإشعارات والعروض</h1>
+      <p class="sub">إرسال وجدولة رسائل يومية عبر بوت الدفع إلى شرائح العملاء والمجموعات المختارة من قاعدة البيانات.</p>
+    </div>
+  </header>
+
+  <section class="grid">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">إنشاء رسالة</div>
+      </div>
+      <div class="panel-body">
+        <div class="form-grid">
+          <div class="field">
+            <label class="label" for="notifTitle">عنوان الرسالة</label>
+            <input id="notifTitle" class="input" type="text" autocomplete="off">
+          </div>
+          <div class="field">
+            <label class="label" for="notifLink">رابط اختياري</label>
+            <input id="notifLink" class="input" type="url" placeholder="https://">
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label" for="notifMessage">نص الرسالة</label>
+          <textarea id="notifMessage" class="textarea"></textarea>
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label class="label" for="notifImage">صورة اختيارية</label>
+            <input id="notifImage" class="input" type="file" accept="image/*">
+          </div>
+          <div class="field">
+            <label class="label" for="scheduleTime">وقت الجدولة اليومية</label>
+            <input id="scheduleTime" class="input" type="time">
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">الفئات المستهدفة</label>
+          <div class="choices" id="segmentChoices"></div>
+        </div>
+
+        <div class="field">
+          <label class="label">المجموعات</label>
+          <div class="choices" id="groupChoices"></div>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-primary" id="sendNowBtn" type="button">إرسال الآن</button>
+          <button class="btn btn-gold" id="scheduleBtn" type="button">جدولة يومية</button>
+          <button class="btn btn-ghost" id="clearBtn" type="button">تفريغ</button>
+        </div>
+        <div class="status" id="formStatus"></div>
+      </div>
+    </div>
+
+    <aside class="panel">
+      <div class="panel-head">
+        <div class="panel-title">الرسائل المجدولة</div>
+        <button class="btn btn-ghost" id="refreshScheduledBtn" type="button">تحديث</button>
+      </div>
+      <div class="panel-body">
+        <p class="mini">تبقى الرسائل محفوظة وتُرسل يوميا في وقتها، ولا تُحذف إلا من زر الحذف هنا.</p>
+        <div class="scheduled-list" id="scheduledList"></div>
+      </div>
+    </aside>
+  </section>
+</main>
+
+<script>
+(function(){
+  const segmentChoices = document.getElementById('segmentChoices');
+  const groupChoices = document.getElementById('groupChoices');
+  const scheduledList = document.getElementById('scheduledList');
+  const statusBox = document.getElementById('formStatus');
+
+  const fallbackSegmentLabels = {
+    all:'كل العملاء',
+    active:'المشتركين النشطين',
+    expired:'المنتهية اشتراكاتهم',
+    expiring:'قرب انتهاء الاشتراك',
+    vip:'VIP',
+    custom_ids:'القائمة المخصصة'
+  };
+  const groupLabels = { public:'المجموعة العامة', private:'المجموعة الخاصة' };
+
+  function setStatus(type, text){
+    statusBox.className = 'status ' + (type || '');
+    statusBox.textContent = text || '';
+  }
+
+  function escapeHtml(value){
+    return String(value || '').replace(/[&<>"']/g, function(ch){
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[ch];
+    });
+  }
+
+  function renderChoice(root, type, key, label, count, checked){
+    const id = `${type}_${key}`;
+    const sub = type === 'segment' ? `${Number(count || 0).toLocaleString('ar-SA')} مستلم` : 'وجهة إرسال';
+    root.insertAdjacentHTML('beforeend', `
+      <label class="choice" for="${id}">
+        <input id="${id}" name="${type}" value="${key}" type="checkbox" ${checked ? 'checked' : ''}>
+        <span class="check"></span>
+        <span class="choice-main">
+          <span class="choice-name">${escapeHtml(label)}</span>
+          <span class="choice-count">${escapeHtml(sub)}</span>
+        </span>
+      </label>
+    `);
+  }
+
+  async function loadTargets(){
+    try{
+      const res = await fetch('/api/notifications/segments', {credentials:'same-origin'});
+      const data = await res.json();
+      if(data.status !== 'ok') throw new Error(data.message || 'فشل تحميل الفئات');
+      const labels = Object.assign({}, fallbackSegmentLabels, data.labels || {});
+      const counts = data.segments || {};
+      segmentChoices.innerHTML = '';
+      Object.keys(labels).forEach((key, index) => renderChoice(segmentChoices, 'segment', key, labels[key], counts[key], index === 0));
+
+      groupChoices.innerHTML = '';
+      const destinations = data.destinations || {};
+      ['public','private'].forEach(key => {
+        const meta = destinations[key] || {};
+        renderChoice(groupChoices, 'destination', key, meta.label || groupLabels[key], 0, false);
+      });
+    }catch(err){
+      segmentChoices.innerHTML = '<div class="scheduled-empty">تعذر تحميل الفئات من قاعدة البيانات.</div>';
+      groupChoices.innerHTML = '';
+      setStatus('err', err.message);
+    }
+  }
+
+  function selected(name){
+    return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(input => input.value);
+  }
+
+  function buildText(){
+    const title = document.getElementById('notifTitle').value.trim();
+    const message = document.getElementById('notifMessage').value.trim();
+    const link = document.getElementById('notifLink').value.trim();
+    return [title, message, link].filter(Boolean).join('\n\n').trim();
+  }
+
+  async function uploadImageIfNeeded(){
+    const fileInput = document.getElementById('notifImage');
+    if(!fileInput.files || !fileInput.files[0]) return '';
+    const fd = new FormData();
+    fd.append('image', fileInput.files[0]);
+    const res = await fetch('/upload_scheduled_image', {method:'POST', credentials:'same-origin', body:fd});
+    const data = await res.json();
+    if(data.status !== 'ok') throw new Error(data.message || 'فشل رفع الصورة');
+    return data.filename || '';
+  }
+
+  async function sendNow(){
+    const message = buildText();
+    const segments = selected('segment');
+    const destinations = selected('destination');
+    if(!message) return setStatus('err', 'نص الرسالة مطلوب.');
+    if(!segments.length && !destinations.length) return setStatus('err', 'اختر فئة أو مجموعة واحدة على الأقل.');
+
+    const btn = document.getElementById('sendNowBtn');
+    btn.disabled = true;
+    setStatus('', '');
+    try{
+      const image_filename = await uploadImageIfNeeded();
+      const res = await fetch('/api/notifications/send', {
+        method:'POST',
+        credentials:'same-origin',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({message, segments, destinations, image_filename})
+      });
+      const data = await res.json();
+      if(data.status !== 'ok') throw new Error(data.message || 'فشل الإرسال');
+      setStatus('ok', `تم الإرسال إلى ${data.sent || 0} مستلم. فشل: ${data.failed || 0}`);
+    }catch(err){
+      setStatus('err', err.message);
+    }finally{
+      btn.disabled = false;
+    }
+  }
+
+  async function scheduleDaily(){
+    const message = buildText();
+    const time = document.getElementById('scheduleTime').value;
+    const segments = selected('segment');
+    const destinations = selected('destination');
+    if(!message) return setStatus('err', 'نص الرسالة مطلوب.');
+    if(!time) return setStatus('err', 'وقت الجدولة مطلوب.');
+    if(!segments.length && !destinations.length) return setStatus('err', 'اختر فئة أو مجموعة واحدة على الأقل.');
+
+    const btn = document.getElementById('scheduleBtn');
+    btn.disabled = true;
+    setStatus('', '');
+    try{
+      const fd = new FormData();
+      fd.append('text', message);
+      fd.append('time', time);
+      segments.forEach(value => fd.append('segments', value));
+      destinations.forEach(value => fd.append('destinations', value));
+      const fileInput = document.getElementById('notifImage');
+      if(fileInput.files && fileInput.files[0]) fd.append('image', fileInput.files[0]);
+      const res = await fetch('/schedule_message', {method:'POST', credentials:'same-origin', body:fd});
+      const data = await res.json();
+      if(data.status !== 'ok') throw new Error(data.message || 'فشل حفظ الجدولة');
+      setStatus('ok', 'تم حفظ الرسالة المجدولة.');
+      await loadScheduled();
+    }catch(err){
+      setStatus('err', err.message);
+    }finally{
+      btn.disabled = false;
+    }
+  }
+
+  function chipHtml(items, labels, extraClass){
+    return (items || []).map(item => `<span class="chip ${extraClass || ''}">${escapeHtml(labels[item] || item)}</span>`).join('');
+  }
+
+  async function loadScheduled(){
+    scheduledList.innerHTML = '<div class="scheduled-empty">جاري التحميل...</div>';
+    try{
+      const res = await fetch('/api/notifications/scheduled', {credentials:'same-origin'});
+      const data = await res.json();
+      if(data.status !== 'ok') throw new Error(data.message || 'فشل تحميل الرسائل');
+      const rows = data.scheduled_messages || [];
+      if(!rows.length){
+        scheduledList.innerHTML = '<div class="scheduled-empty">لا توجد رسائل مجدولة حاليا.</div>';
+        return;
+      }
+      scheduledList.innerHTML = rows.map(msg => {
+        const segments = chipHtml(msg.segments || [], fallbackSegmentLabels, '');
+        const groups = chipHtml(msg.groups || [], groupLabels, 'group');
+        const image = msg.image_url ? `<img class="thumb" src="${escapeHtml(msg.image_url)}" alt="">` : '';
+        return `
+          <article class="scheduled-item">
+            <div class="scheduled-top">
+              <span class="time">${escapeHtml(msg.time || '--:--')}</span>
+              <button class="btn btn-danger" type="button" data-delete="${escapeHtml(msg.id)}">حذف</button>
+            </div>
+            <div class="chips">${segments}${groups}</div>
+            <div class="snippet">${escapeHtml(msg.text || '')}</div>
+            ${image}
+          </article>
+        `;
+      }).join('');
+    }catch(err){
+      scheduledList.innerHTML = `<div class="scheduled-empty">${escapeHtml(err.message)}</div>`;
+    }
+  }
+
+  async function deleteScheduled(id){
+    if(!id) return;
+    try{
+      const res = await fetch('/delete_scheduled_message', {
+        method:'POST',
+        credentials:'same-origin',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({id})
+      });
+      const data = await res.json();
+      if(data.status !== 'ok') throw new Error(data.message || 'فشل الحذف');
+      await loadScheduled();
+      setStatus('ok', 'تم حذف الرسالة المجدولة.');
+    }catch(err){
+      setStatus('err', err.message);
+    }
+  }
+
+  document.getElementById('sendNowBtn').addEventListener('click', sendNow);
+  document.getElementById('scheduleBtn').addEventListener('click', scheduleDaily);
+  document.getElementById('refreshScheduledBtn').addEventListener('click', loadScheduled);
+  document.getElementById('clearBtn').addEventListener('click', function(){
+    document.getElementById('notifTitle').value = '';
+    document.getElementById('notifMessage').value = '';
+    document.getElementById('notifLink').value = '';
+    document.getElementById('notifImage').value = '';
+    document.getElementById('scheduleTime').value = '';
+    setStatus('', '');
+  });
+  scheduledList.addEventListener('click', function(e){
+    const btn = e.target.closest('[data-delete]');
+    if(btn) deleteScheduled(btn.dataset.delete);
+  });
+
+  loadTargets();
+  loadScheduled();
+})();
+</script>
+</body>
+</html>

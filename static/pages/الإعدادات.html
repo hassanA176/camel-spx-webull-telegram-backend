@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAMEL SPX • الإعدادات</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Orbitron:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+<style>
+/* ─── Cross-page additions (do not exist in the original) ─── */
+.ph{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:22px;flex-wrap:wrap}
+.ph-left{flex:1;min-width:0}
+.ph-eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:var(--f-tech, 'Rajdhani', sans-serif);font-weight:700;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--cyan, #00E5FF);margin-bottom:8px}
+.ph-eyebrow svg{width:13px;height:13px}
+.ph-eyebrow--gold{color:var(--gold, #F5C95C)!important}
+.ph-eyebrow--gold svg{color:var(--gold, #F5C95C)!important}
+.ph-eyebrow--purple{color:#C8A8FF!important}
+.ph-eyebrow--purple svg{color:#C8A8FF!important}
+.ph-title{font-family:var(--f-display, 'Orbitron', sans-serif);font-weight:800;font-size:34px;letter-spacing:-0.5px;color:var(--text-primary, #F5F7FF);margin:0 0 8px}
+.ph-sub{font-size:14px;color:var(--text-secondary, rgba(245,247,255,0.6));line-height:1.6;max-width:760px;margin:0}
+.ph-sub strong{color:var(--text-primary);font-weight:700}
+.ph-actions{display:flex;gap:10px;flex-shrink:0}
+
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:10px;font-family:var(--f-display, 'Orbitron');font-weight:700;font-size:12.5px;letter-spacing:0.6px;cursor:pointer;border:1px solid transparent;transition:transform 0.15s, box-shadow 0.2s, background 0.2s;white-space:nowrap}
+.btn svg{width:14px;height:14px}
+.btn-primary{background:linear-gradient(135deg,#00E5FF,#0099BB);color:#04060B;box-shadow:0 8px 24px -8px rgba(0,229,255,0.5)}
+.btn-primary:hover{transform:translateY(-2px)}
+.btn-gold{background:linear-gradient(135deg,#F5C95C,#C99528);color:#08060B;box-shadow:0 8px 24px -8px rgba(245,201,92,0.5)}
+.btn-gold:hover{transform:translateY(-2px)}
+.btn-purple{background:linear-gradient(135deg,#9B6CFF,#6940CC);color:#FFF;box-shadow:0 8px 24px -8px rgba(155,108,255,0.5)}
+.btn-purple:hover{transform:translateY(-2px)}
+.btn-ghost{background:rgba(255,255,255,0.03);color:var(--text-primary);border:1px solid rgba(255,255,255,0.1)}
+.btn-ghost:hover{background:rgba(255,255,255,0.06);border-color:rgba(0,229,255,0.3)}
+.btn-profit{background:linear-gradient(135deg,#00FF94,#00A862);color:#04060B}
+.btn-loss{background:linear-gradient(135deg,#FF3D5C,#A02234);color:#FFF}
+.btn-sm{padding:7px 12px;font-size:12px}
+.btn-sm svg{width:12px;height:12px}
+
+.kpi-grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.kpi-grid-5{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:18px}
+.kpi{background:var(--glass, rgba(20,28,52,0.45));border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:18px;position:relative;overflow:hidden;backdrop-filter:blur(20px) saturate(140%)}
+.kpi::before{content:'';position:absolute;top:0;right:0;left:0;height:1px;background:linear-gradient(90deg,transparent,var(--kpi-line, rgba(0,229,255,0.4)),transparent)}
+.kpi--cyan{--kpi-line:rgba(0,229,255,0.5)}
+.kpi--gold{--kpi-line:rgba(245,201,92,0.5)}
+.kpi--purple{--kpi-line:rgba(155,108,255,0.5)}
+.kpi--profit{--kpi-line:rgba(0,255,148,0.5)}
+.kpi--loss{--kpi-line:rgba(255,61,92,0.5)}
+.kpi--warn{--kpi-line:rgba(255,184,0,0.5)}
+.kpi-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.kpi-label{display:flex;align-items:center;gap:8px;font-size:11.5px;font-weight:600;color:var(--text-tertiary, rgba(245,247,255,0.4));font-family:var(--f-tech, 'Rajdhani');letter-spacing:0.6px;text-transform:uppercase}
+.kpi-icon{display:inline-flex;width:24px;height:24px;align-items:center;justify-content:center;border-radius:6px;background:rgba(255,255,255,0.04)}
+.kpi-icon svg{width:13px;height:13px;color:var(--text-secondary)}
+.kpi-value{font-family:var(--f-display, 'Orbitron');font-weight:800;font-size:30px;letter-spacing:-0.5px;color:var(--text-primary);line-height:1.1}
+.kpi-value .unit{font-size:13px;color:var(--text-tertiary);margin-right:4px;font-weight:600}
+.kpi-sub{font-size:11.5px;color:var(--text-tertiary);margin-top:6px;font-family:var(--f-mono, 'JetBrains Mono')}
+.kpi-sub strong{color:var(--text-secondary);font-weight:700}
+
+.panel{background:var(--glass);border:1px solid rgba(255,255,255,0.06);border-radius:14px;backdrop-filter:blur(20px) saturate(140%);overflow:hidden;margin-bottom:18px}
+.panel-head{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.05)}
+.panel-title{display:flex;align-items:center;gap:10px;font-family:var(--f-display, 'Orbitron');font-weight:700;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-primary)}
+.panel-title svg{width:16px;height:16px;color:var(--cyan, #00E5FF)}
+.panel-title .pill{font-family:var(--f-tech, 'Rajdhani');font-size:10px;padding:4px 8px;border-radius:5px;letter-spacing:2px;background:rgba(0,229,255,0.08);color:var(--cyan);border:1px solid rgba(0,229,255,0.2);text-transform:uppercase}
+.panel-actions{display:flex;gap:8px}
+.panel-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:7px;color:var(--text-secondary);font-size:11.5px;font-weight:600;cursor:pointer}
+.panel-chip svg{width:11px;height:11px}
+.panel-chip:hover{border-color:rgba(0,229,255,0.3);color:var(--cyan)}
+.panel-body{padding:20px}
+
+.dtable{width:100%;border-collapse:collapse}
+.dtable thead th{padding:11px 16px;text-align:right;font-family:var(--f-tech, 'Rajdhani');font-size:10.5px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--text-tertiary);border-bottom:1px solid rgba(255,255,255,0.05);background:rgba(0,0,0,0.18)}
+.dtable tbody td{padding:13px 16px;font-size:13px;color:var(--text-secondary);border-bottom:1px solid rgba(255,255,255,0.03);vertical-align:middle}
+.dtable tbody tr:hover{background:rgba(0,229,255,0.025)}
+.cell-id{font-family:var(--f-mono);font-weight:700;color:var(--text-primary);font-size:12px}
+.cell-mono{font-family:var(--f-mono);font-size:12.5px;color:var(--text-secondary)}
+.cell-pnl{font-family:var(--f-mono);font-weight:700}
+.cell-pnl.up{color:var(--profit, #00FF94)}
+.cell-pnl.down{color:var(--loss, #FF3D5C)}
+.cell-user{display:flex;align-items:center;gap:10px}
+.ava{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,rgba(0,229,255,0.18),rgba(155,108,255,0.18));border:1px solid rgba(255,255,255,0.08);color:var(--text-primary);font-family:var(--f-display);font-weight:700;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ucol{display:flex;flex-direction:column;line-height:1.3}
+.ucol b{color:var(--text-primary);font-size:13px;font-weight:700}
+.ucol span{color:var(--text-tertiary);font-size:11px;font-family:var(--f-mono)}
+
+.badge-status{display:inline-block;padding:4px 9px;border-radius:5px;font-size:10.5px;font-weight:700;letter-spacing:0.5px;font-family:var(--f-tech)}
+.s-active{background:rgba(0,255,148,0.1);color:var(--profit);border:1px solid rgba(0,255,148,0.3)}
+.s-pending{background:rgba(255,184,0,0.1);color:#FFB800;border:1px solid rgba(255,184,0,0.3)}
+.s-rejected{background:rgba(255,61,92,0.1);color:var(--loss);border:1px solid rgba(255,61,92,0.3)}
+.badge-side{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:5px;font-family:var(--f-display);font-weight:700;font-size:10.5px;letter-spacing:1px}
+.badge-side svg{width:10px;height:10px}
+.badge-side.call{background:rgba(0,255,148,0.1);color:var(--profit);border:1px solid rgba(0,255,148,0.3)}
+.badge-side.put{background:rgba(255,61,92,0.1);color:var(--loss);border:1px solid rgba(255,61,92,0.3)}
+
+.row-acts{display:flex;gap:6px;justify-content:flex-end}
+.row-act{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:7px;color:var(--text-tertiary);cursor:pointer;transition:all 0.16s}
+.row-act svg{width:14px;height:14px}
+.row-act:hover{color:var(--cyan);border-color:rgba(0,229,255,0.35)}
+.row-act.danger:hover{color:var(--loss);border-color:rgba(255,61,92,0.4)}
+.row-act.success:hover{color:var(--profit);border-color:rgba(0,255,148,0.4)}
+.row-act.gold:hover{color:var(--gold);border-color:rgba(245,201,92,0.4)}
+
+.fstrip{display:flex;align-items:center;gap:14px;background:var(--glass);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:11px 16px;margin-bottom:18px;backdrop-filter:blur(20px)}
+.fstrip-label{display:flex;align-items:center;gap:6px;font-family:var(--f-tech);font-size:11px;color:var(--text-tertiary);letter-spacing:1.5px;text-transform:uppercase;font-weight:700}
+.fstrip-label svg{color:var(--cyan)}
+.pill-group{display:flex;gap:4px;background:rgba(0,0,0,0.22);padding:4px;border-radius:9px}
+.pill-btn{padding:7px 14px;background:transparent;border:none;color:var(--text-tertiary);font-family:var(--f-tech);font-weight:600;font-size:12px;letter-spacing:0.5px;border-radius:6px;cursor:pointer;transition:all 0.18s}
+.pill-btn:hover{color:var(--text-primary)}
+.pill-btn.active{background:rgba(0,229,255,0.12);color:var(--cyan);box-shadow:0 0 0 1px rgba(0,229,255,0.25)}
+.fstrip-search{margin-right:auto;display:flex;align-items:center;gap:8px;background:rgba(0,0,0,0.22);border:1px solid rgba(255,255,255,0.05);border-radius:9px;padding:6px 12px;min-width:280px}
+.fstrip-search svg{width:14px;height:14px;color:var(--text-tertiary)}
+.fstrip-search input{flex:1;background:transparent;border:none;outline:none;color:var(--text-primary);font-size:13px;font-family:var(--f-body, 'Cairo')}
+
+.notice{display:flex;align-items:flex-start;gap:14px;padding:14px 18px;border-radius:12px;margin-bottom:18px;position:relative;background:var(--glass);border:1px solid rgba(255,255,255,0.06);backdrop-filter:blur(20px)}
+.notice-bar{position:absolute;top:0;right:0;bottom:0;width:3px;border-radius:3px 0 0 3px}
+.notice-icon{flex-shrink:0;width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.notice-icon svg{width:16px;height:16px}
+.notice-body{flex:1;min-width:0}
+.notice-title{font-weight:700;color:var(--text-primary);font-size:13.5px;margin-bottom:3px}
+.notice-text{font-size:12.5px;color:var(--text-secondary);line-height:1.6}
+.notice-info .notice-bar{background:var(--cyan)}
+.notice-info .notice-icon{background:rgba(0,229,255,0.08);color:var(--cyan)}
+.notice-warn .notice-bar{background:#FFB800}
+.notice-warn .notice-icon{background:rgba(255,184,0,0.08);color:#FFB800}
+.notice-rule .notice-bar{background:var(--gold)}
+.notice-rule .notice-icon{background:rgba(245,201,92,0.08);color:var(--gold)}
+
+.field{margin-bottom:14px}
+.field-label{display:block;font-family:var(--f-tech);font-size:11px;color:var(--text-tertiary);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;font-weight:700}
+.field-hint{color:var(--text-tertiary);font-size:11px;font-weight:400;margin-right:8px;text-transform:none;letter-spacing:0}
+.input,.select,.textarea{width:100%;background:rgba(0,0,0,0.22);border:1px solid rgba(255,255,255,0.06);border-radius:9px;padding:11px 14px;color:var(--text-primary);font-size:13px;font-family:var(--f-body, 'Cairo');outline:none;transition:border 0.18s}
+.input:focus,.select:focus,.textarea:focus{border-color:rgba(0,229,255,0.35)}
+.textarea{resize:vertical;font-family:var(--f-body)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+.toggle{position:relative;display:inline-block;width:44px;height:22px;flex-shrink:0;cursor:pointer}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-slider{position:absolute;inset:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:22px;transition:0.2s}
+.toggle-slider::before{content:'';position:absolute;width:16px;height:16px;right:3px;top:2px;background:#FFF;border-radius:50%;transition:0.2s}
+.toggle input:checked + .toggle-slider{background:linear-gradient(135deg,#00E5FF,#0099BB);border-color:rgba(0,229,255,0.3)}
+.toggle input:checked + .toggle-slider::before{transform:translateX(-22px)}
+.toggle-row{display:flex;align-items:flex-start;gap:14px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
+.toggle-row:last-child{border-bottom:none}
+.toggle-text{flex:1}
+.toggle-title{font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:2px}
+.toggle-sub{font-size:11.5px;color:var(--text-tertiary)}
+
+.fade-in{animation:fade-up .5s ease-out both}
+.fade-in.d1{animation-delay:.08s}
+.fade-in.d2{animation-delay:.16s}
+.fade-in.d3{animation-delay:.24s}
+@keyframes fade-up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* Container for new pages — content area only */
+.page-wrap{padding:28px 32px;max-width:1500px;margin:0 auto}
+</style>
+
+<style id="camel-base">
+:root{
+  --surface-0:#04060B;--surface-1:#080C18;--surface-2:#0E1426;
+  --glass:rgba(20,28,52,0.65);--glass-strong:rgba(12,18,38,0.88);
+  --cyan:#00E5FF;--cyan-soft:rgba(0,229,255,0.1);--cyan-dim:#0099BB;
+  --purple:#9B6CFF;--purple-soft:rgba(155,108,255,0.12);
+  --gold:#F5C95C;--profit:#00FF94;--loss:#FF3D5C;
+  --text-primary:#F5F7FF;--text-secondary:rgba(245,247,255,0.65);
+  --text-tertiary:rgba(245,247,255,0.38);--text-muted:rgba(245,247,255,0.25);
+  --border:rgba(255,255,255,0.06);--border-bright:rgba(255,255,255,0.12);
+  --f-display:'Orbitron',sans-serif;--f-body:'Cairo',sans-serif;
+  --f-mono:'JetBrains Mono',monospace;--f-tech:'Rajdhani',sans-serif;
+  --bg-grad: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,229,255,0.06), transparent 60%),
+             radial-gradient(ellipse 70% 50% at 80% 100%, rgba(155,108,255,0.04), transparent 60%),
+             linear-gradient(180deg, #04060B 0%, #080C18 50%, #04060B 100%);
+}
+html,body{
+  margin:0;padding:0;min-height:100%;
+  background:var(--bg-grad);
+  color:var(--text-primary);
+  font-family:'Cairo','Segoe UI',sans-serif;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  transition:background 0.3s ease, color 0.3s ease;
+}
+body::-webkit-scrollbar{width:8px;height:8px}
+body::-webkit-scrollbar-track{background:transparent}
+body::-webkit-scrollbar-thumb{background:rgba(127,127,127,0.18);border-radius:4px}
+body::-webkit-scrollbar-thumb:hover{background:rgba(127,127,127,0.32)}
+h1,h2,h3,h4,h5,h6,p,span,div,label,td,th,li,a{color:inherit}
+a{color:var(--cyan);text-decoration:none}
+input,select,textarea,button{font-family:inherit;color:inherit}
+
+/* ─── Light scheme via filter inversion ─────────────────────────────
+   The inner pages have many hardcoded dark surfaces (rgba(0,0,0,X), hex
+   navys) in their own <style> blocks that CSS overrides can't reach.
+   Inverting the whole body with hue-rotate(180°) flips every dark area
+   to light while keeping colourful accents (cyan stays cyan, gold stays
+   gold) because hue-rotate cancels the hue shift from the invert.
+   Real images are re-inverted so photographs stay correct.
+   ────────────────────────────────────────────────────────────────── */
+html[data-scheme="light"] body{
+  filter:invert(0.93) hue-rotate(180deg);
+}
+html[data-scheme="light"] img,
+html[data-scheme="light"] video,
+html[data-scheme="light"] picture,
+html[data-scheme="light"] svg image,
+html[data-scheme="light"] [style*="background-image:url"],
+html[data-scheme="light"] [style*="background-image: url"],
+html[data-scheme="light"] [style*="background:url"]{
+  filter:invert(1) hue-rotate(180deg);
+}
+</style>
+<script>
+/* Listen for theme + scheme changes from the parent shell and apply live. */
+(function(){
+  function applyVars(vars){
+    if(!vars) return;
+    for(var k in vars){ document.documentElement.style.setProperty(k, vars[k]); }
+  }
+  window.addEventListener('message', function(e){
+    var d = e && e.data;
+    if(!d || typeof d !== 'object') return;
+    if(d.type === 'camel:apply-theme'){
+      applyVars(d.vars);
+      if(d.themeKey) document.documentElement.dataset.activeTheme = d.themeKey;
+    } else if(d.type === 'camel:apply-scheme' && (d.scheme === 'dark' || d.scheme === 'light')){
+      document.documentElement.dataset.scheme = d.scheme;
+    }
+  });
+})();
+</script>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+    <linearGradient id="grad-cy" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00E5FF" stop-opacity="0.55"/><stop offset="100%" stop-color="#00E5FF" stop-opacity="0"/></linearGradient>
+    <linearGradient id="grad-gr" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00FF94" stop-opacity="0.55"/><stop offset="100%" stop-color="#00FF94" stop-opacity="0"/></linearGradient>
+    <linearGradient id="grad-rd" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FF3D5C" stop-opacity="0.55"/><stop offset="100%" stop-color="#FF3D5C" stop-opacity="0"/></linearGradient>
+    <linearGradient id="grad-go" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#F5C95C" stop-opacity="0.55"/><stop offset="100%" stop-color="#F5C95C" stop-opacity="0"/></linearGradient>
+  </defs>
+<symbol id="i-camel" viewBox="0 0 32 32">
+    <path d="M6 22c0-3 1-5 3-6.5C10 12 11 9 14 8.5c1.5-.3 3 .2 4 1 .8-.6 1.8-.9 2.8-.6 1.5.4 2.5 1.6 2.8 3.1.1.8-.1 1.5-.5 2.1 1.2.3 2.2 1.2 2.6 2.4.3 1 .1 2-.4 2.8-.4.6-1 1-1.6 1.2v3l-2 1v-3h-1.5l-.5 3h-2l.5-3h-7l-.5 3h-2l.5-3c-1.7-.2-3.2-1.5-3.7-3.5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+    <circle cx="20.5" cy="13" r="0.9" fill="currentColor"/>
+  </symbol>
+<symbol id="i-pulse" viewBox="0 0 24 24"><path d="M3 12h3l3-9 6 18 3-9h3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-bull" viewBox="0 0 24 24"><path d="M5 14l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 19l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/></symbol>
+<symbol id="i-bear" viewBox="0 0 24 24"><path d="M5 10l7 7 7-7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 5l7 7 7-7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/></symbol>
+<symbol id="i-up" viewBox="0 0 24 24"><path d="M12 5v14M5 12l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="M12 19V5M19 12l-7 7-7-7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="1" fill="currentColor"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.5 8-8 9-4.5-1-8-4.5-8-9V6l8-3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+<symbol id="i-ai" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="9.5" y="9.5" width="5" height="5" rx="1" fill="currentColor" opacity="0.6"/><path d="M9 3v3M12 3v3M15 3v3M9 18v3M12 18v3M15 18v3M3 9h3M3 12h3M3 15h3M18 9h3M18 12h3M18 15h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+<symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 21h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><rect x="5" y="11" width="3" height="8" fill="currentColor" opacity="0.4" rx="1"/><rect x="10.5" y="7" width="3" height="12" fill="currentColor" opacity="0.7" rx="1"/><rect x="16" y="13" width="3" height="6" fill="currentColor" rx="1"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+<symbol id="i-filter" viewBox="0 0 24 24">
+    <path d="M4 6h16M7 12h10M10 18h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+<symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 1112 0c0 7 3 7 3 9H3c0-2 3-2 3-9z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M10 21a2 2 0 004 0" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+<symbol id="i-send" viewBox="0 0 24 24">
+    <path d="M3 11l18-8-7 18-2-8-9-2z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M14 13l4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+  </symbol>
+<symbol id="i-cam" viewBox="0 0 24 24">
+    <rect x="3" y="7" width="18" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/>
+    <circle cx="12" cy="13.5" r="3.5" fill="none" stroke="currentColor" stroke-width="1.7"/>
+    <path d="M8 7l2-3h4l2 3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+  </symbol>
+<symbol id="i-cog" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M3 20c0-3.5 3-6 6-6s6 2.5 6 6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="17" cy="9" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M15 15c3 0 6 1.5 6 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+<symbol id="i-home" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7"/><rect x="13" y="3" width="8" height="5" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7"/><rect x="3" y="13" width="8" height="8" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7"/><rect x="13" y="10" width="8" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+<symbol id="i-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M15 9c0-1.5-1.5-2-3-2s-3 .5-3 2 1.5 2 3 2 3 .5 3 2-1.5 2-3 2-3-.5-3-2M12 6v2M12 16v2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+<symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 3c1 3 4 5 4 9a4 4 0 11-8 0c0-2 1-3 1-5 0 1 1 2 2 2-1-2 0-4 1-6z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+<symbol id="i-trophy" viewBox="0 0 24 24"><path d="M6 3h12v5a6 6 0 01-12 0V3z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M6 5H3v2a3 3 0 003 3M18 5h3v2a3 3 0 01-3 3M9 21h6M12 16v5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+<symbol id="i-diamond" viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9l4-6z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M2 9h20M9 3l3 6 3-6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+<symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linejoin="round"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24">
+    <path d="M21 13a9 9 0 11-10-10c-1 4 2 9 4 10 2 1 6 0 6 0z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+  </symbol>
+<symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="7.5" r="1.2" fill="currentColor"/></symbol>
+<symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 3l10 17H2L12 3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 10v4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.2" r="1.1" fill="currentColor"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></symbol>
+<symbol id="i-trending-down" viewBox="0 0 24 24"><path d="M2 7l8 8 4-4 8 8M22 19h-6M22 19v-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-trending-up" viewBox="0 0 24 24"><path d="M2 17l8-8 4 4 8-8M22 5h-6M22 5v6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-pdf" viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9l-6-6z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M14 3v6h6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M8 14h2.5a1.5 1.5 0 010 3H8v-3zm0 0v4M13 14h2a1 1 0 011 1v2a1 1 0 01-1 1h-2v-4zM17.5 14H20m-2.5 2h2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" fill="none"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M8.5 12.5l2.5 2.5L16 9" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M9 9l6 6M15 9l-6 6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></symbol>
+<symbol id="i-back" viewBox="0 0 24 24"><path d="M20 12H4M11 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 3v18M6 8l-3 6h6L6 8zM18 8l-3 6h6l-3-6zM4 21h16M5 8l1-2 6-1 6 1 1 2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5M3 17l9 5 9-5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+</svg>
+
+<div class="bg-stack" aria-hidden="true">
+  <div class="bg-mesh"></div>
+  <div class="bg-grid"></div>
+  <div class="bg-stars" id="bgStars"></div>
+  <div class="bg-scanline"></div>
+  <div class="bg-noise"></div>
+</div>
+
+<div class="page-wrap">
+
+<style>
+.set-grid{display:grid;grid-template-columns:240px 1fr;gap:22px;align-items:flex-start}
+.set-tabs{display:flex;flex-direction:column;gap:4px;background:var(--glass);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:10px;backdrop-filter:blur(20px);position:sticky;top:20px}
+.set-tab{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:9px;font-size:13px;font-weight:600;color:var(--text-tertiary);cursor:pointer;border:1px solid transparent;transition:all 0.18s;font-family:var(--f-body, 'Cairo')}
+.set-tab svg{width:15px;height:15px;opacity:0.7}
+.set-tab:hover{color:var(--text-primary);background:rgba(255,255,255,0.03)}
+.set-tab.active{color:var(--cyan);background:rgba(0,229,255,0.06);border-color:rgba(0,229,255,0.18)}
+.set-tab.active svg{opacity:1;color:var(--cyan)}
+.pkg-edit-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:6px}
+.pkg-edit{background:rgba(0,0,0,0.18);border:1px solid rgba(255,255,255,0.05);border-radius:12px;padding:16px}
+.pkg-edit.gold{border-color:rgba(245,201,92,0.25)}
+.pkg-edit.purple{border-color:rgba(155,108,255,0.25)}
+.pkg-edit-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.pkg-edit-name{font-family:var(--f-display);font-weight:800;font-size:14px;color:var(--text-primary)}
+.pkg-edit-tag{font-family:var(--f-tech);font-size:10px;padding:4px 10px;border-radius:5px;letter-spacing:1.5px;text-transform:uppercase;background:rgba(0,229,255,0.08);color:var(--cyan);border:1px solid rgba(0,229,255,0.2)}
+.pkg-edit.gold .pkg-edit-tag{background:rgba(245,201,92,0.1);color:var(--gold);border-color:rgba(245,201,92,0.25)}
+.pkg-edit.purple .pkg-edit-tag{background:rgba(155,108,255,0.1);color:#C8A8FF;border-color:rgba(155,108,255,0.25)}
+</style>
+
+<div class="ph fade-in">
+  <div class="ph-left">
+    <div class="ph-eyebrow"><svg><use href="#i-cog"/></svg><span>PLATFORM SETTINGS · CONFIGURATION</span></div>
+    <h1 class="ph-title">الإعدادات</h1>
+    <p class="ph-sub">إعدادات المنصة الأساسية: قواعد التداول، الباقات، الإحالة، تكامل <strong>زد</strong>، والهوية البصرية.</p>
+  </div>
+  <div class="ph-actions">
+    <button class="btn btn-ghost"><svg><use href="#i-back"/></svg><span>تراجع</span></button>
+    <button class="btn btn-primary"><svg><use href="#i-check"/></svg><span>حفظ التغييرات</span></button>
+  </div>
+</div>
+
+<div class="set-grid fade-in d1">
+
+  <div class="set-tabs">
+    <div class="set-tab active"><svg><use href="#i-cog"/></svg><span>عام</span></div>
+    <div class="set-tab"><svg><use href="#i-target"/></svg><span>قواعد التداول</span></div>
+    <div class="set-tab"><svg><use href="#i-users"/></svg><span>برنامج الإحالة</span></div>
+    <div class="set-tab"><svg><use href="#i-diamond"/></svg><span>الباقات والأسعار</span></div>
+    <div class="set-tab"><svg><use href="#i-bolt"/></svg><span>تكامل زد</span></div>
+    <div class="set-tab"><svg><use href="#i-cam"/></svg><span>الهوية البصرية</span></div>
+  </div>
+
+  <div>
+
+    <div class="panel">
+      <div class="panel-head"><div class="panel-title"><svg><use href="#i-cog"/></svg><span>إعدادات عامة</span></div></div>
+      <div class="panel-body">
+        <div class="form-row">
+          <div class="field"><label class="field-label">اسم المنصة</label><input class="input" value="CAMEL SPX"></div>
+          <div class="field"><label class="field-label">المنطقة الزمنية</label><select class="select"><option>Asia/Riyadh (UTC+3)</option><option>America/New_York (UTC-5)</option></select></div>
+        </div>
+        <div class="form-row">
+          <div class="field"><label class="field-label">العملة الأساسية</label><select class="select"><option>ريال سعودي (SAR)</option><option>دولار أمريكي (USD)</option></select></div>
+          <div class="field"><label class="field-label">سعر التحويل الافتراضي</label><input class="input" value="3.75" placeholder="SAR / USD"></div>
+        </div>
+        <div class="field">
+          <label class="field-label">رسالة الترحيب للعملاء الجدد</label>
+          <textarea class="textarea" rows="3">أهلاً بك في CAMEL SPX 🐪 — منصة إشارات SPX الذكية. شاهد الصفقات لحظياً، احسب أرباحك بقاعدة $50، واكسب من برنامج الإحالة.</textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><div class="panel-title"><svg><use href="#i-target"/></svg><span>قواعد التداول الذكية</span></div></div>
+      <div class="panel-body">
+        <div class="notice notice-rule" style="margin-bottom:16px">
+          <span class="notice-bar"></span>
+          <div class="notice-icon"><svg><use href="#i-warn"/></svg></div>
+          <div class="notice-body">
+            <div class="notice-title">قاعدة $50 الذهبية</div>
+            <div class="notice-text">أي صفقة لم تحقق على الأقل $50 ربح تُحتسب <b>خاسرة</b> حتى لو كانت رابحة. هذه القاعدة تحمي القناة من التضليل بأرباح صغيرة.</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field"><label class="field-label">حد الربح الأدنى (USD)</label><input class="input" value="50"></div>
+          <div class="field"><label class="field-label">حد الربح الأدنى المكافئ (SAR)</label><input class="input" value="190"></div>
+        </div>
+        <div class="toggle-row"><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label><div class="toggle-text"><div class="toggle-title">تطبيق القاعدة على لوحة الإدارة</div><div class="toggle-sub">احتساب Win Rate وفق قاعدة $50</div></div></div>
+        <div class="toggle-row"><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label><div class="toggle-text"><div class="toggle-title">عرض القاعدة للعميل افتراضياً</div><div class="toggle-sub">العميل يقدر يبدّل لرؤية الأرقام الفعلية</div></div></div>
+        <div class="toggle-row"><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label><div class="toggle-text"><div class="toggle-title">تنبيه عند صفقة أقل من $50</div><div class="toggle-sub">إشعار داخلي للأدمن قبل النشر العام</div></div></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><div class="panel-title"><svg><use href="#i-diamond"/></svg><span>الباقات والأسعار</span></div></div>
+      <div class="panel-body">
+        <div class="pkg-edit-grid">
+          <div class="pkg-edit">
+            <div class="pkg-edit-head"><div class="pkg-edit-name">شهري</div><span class="pkg-edit-tag">30 يوم</span></div>
+            <div class="form-row"><div class="field"><label class="field-label">السعر (ر.س)</label><input class="input" value="349"></div><div class="field"><label class="field-label">السعر (USD)</label><input class="input" value="93"></div></div>
+          </div>
+          <div class="pkg-edit">
+            <div class="pkg-edit-head"><div class="pkg-edit-name">ربع سنوي</div><span class="pkg-edit-tag">90 يوم</span></div>
+            <div class="form-row"><div class="field"><label class="field-label">السعر (ر.س)</label><input class="input" value="890"></div><div class="field"><label class="field-label">السعر (USD)</label><input class="input" value="237"></div></div>
+          </div>
+          <div class="pkg-edit gold">
+            <div class="pkg-edit-head"><div class="pkg-edit-name">سنوي ذهبي</div><span class="pkg-edit-tag">365 يوم</span></div>
+            <div class="form-row"><div class="field"><label class="field-label">السعر (ر.س)</label><input class="input" value="2990"></div><div class="field"><label class="field-label">السعر (USD)</label><input class="input" value="797"></div></div>
+          </div>
+          <div class="pkg-edit purple">
+            <div class="pkg-edit-head"><div class="pkg-edit-name">سنوي بلاتيني · VIP</div><span class="pkg-edit-tag">365 يوم</span></div>
+            <div class="form-row"><div class="field"><label class="field-label">السعر (ر.س)</label><input class="input" value="4990"></div><div class="field"><label class="field-label">السعر (USD)</label><input class="input" value="1331"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+</div>
+
+<script>
+// stars
+(function(){
+  const host = document.getElementById('bgStars');
+  if(!host) return;
+  for(let i=0;i<60;i++){
+    const s = document.createElement('span');
+    const size = 0.5 + Math.random()*1.8;
+    s.style.cssText = `position:absolute;width:${size}px;height:${size}px;top:${Math.random()*100}%;left:${Math.random()*100}%;background:rgba(255,255,255,${0.2 + Math.random()*0.5});border-radius:50%;box-shadow:0 0 ${size*3}px rgba(255,255,255,${0.3 + Math.random()*0.4});animation:twk ${2 + Math.random()*5}s ease-in-out ${Math.random()*4}s infinite;`;
+    host.appendChild(s);
+  }
+})();
+// pill-group local toggle
+document.addEventListener('click', function(e){
+  const pill = e.target.closest('.pill-btn');
+  if(pill){
+    const g = pill.closest('.pill-group');
+    if(g){ g.querySelectorAll('.pill-btn').forEach(p=>p.classList.remove('active')); pill.classList.add('active'); }
+  }
+});
+</script>
+<script>
+(function(){
+  const tabs = Array.from(document.querySelectorAll('.set-tab'));
+  if(!tabs.length) return;
+  const grid = document.querySelector('.set-grid');
+  if(!grid) return;
+  const panelCol = grid.children[1];
+  if(!panelCol) return;
+  const realPanels = Array.from(panelCol.querySelectorAll(':scope > .panel'));
+  // tabs: 0=عام, 1=قواعد, 2=الإحالة*, 3=الباقات, 4=زد*, 5=الهوية* (* = synthesized)
+
+  const REFERRAL_HTML = `
+    <div class="panel" data-syn="2">
+      <div class="panel-head"><div class="panel-title"><svg><use href="#i-users"/></svg><span>برنامج الإحالة</span></div></div>
+      <div class="panel-body">
+
+        <!-- Section A: How it works -->
+        <div class="notice notice-rule" style="margin-bottom:22px">
+          <span class="notice-bar"></span>
+          <div class="notice-icon"><svg><use href="#i-info"/></svg></div>
+          <div class="notice-body">
+            <div class="notice-title">كيف تعمل المكافآت</div>
+            <div class="notice-text">
+              <strong>المُحيل</strong> هو العميل الذي يشارك كوده. <strong>المُحال</strong> هو العميل الجديد الذي اشترك عبر الكود.
+              عند كل اشتراك ناجح، يستلم <strong>المُحيل</strong> مكافأة. القيمة تتغيّر حسب <strong>الباقة التي اشترك بها المُحال</strong>،
+              والعميل المُحيل هو من يختار <strong>نوع المكافأة</strong> (كاش / خصم / أيام).
+            </div>
+          </div>
+        </div>
+
+        <!-- Section B: Enable reward types (the 3 options the client picks from) -->
+        <div style="margin-bottom:24px">
+          <div style="font-family:var(--f-display);font-weight:700;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-primary);margin-bottom:6px">١. أنواع المكافآت المتاحة للعميل</div>
+          <div style="font-size:12.5px;color:var(--text-tertiary);margin-bottom:14px;line-height:1.6">اختر أيّ من الأنواع الثلاثة سيراها العميل ويقدر يختار منه. لو عطّلت نوعاً، لن يظهر للعميل.</div>
+
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+            <div style="border:1px solid rgba(0,229,255,0.25);border-radius:12px;padding:14px;background:rgba(0,229,255,0.04)">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                <span style="font-size:13.5px;font-weight:700;color:#00E5FF">🔵 كاش أوت</span>
+                <label class="toggle"><input type="checkbox" checked data-reward="cashout"><span class="toggle-slider"></span></label>
+              </div>
+              <div style="font-size:11.5px;color:var(--text-tertiary);line-height:1.5">المُحيل يستلم مبلغ نقدي في محفظته (قابل للسحب لحسابه البنكي)</div>
+            </div>
+            <div style="border:1px solid rgba(245,201,92,0.25);border-radius:12px;padding:14px;background:rgba(245,201,92,0.04)">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                <span style="font-size:13.5px;font-weight:700;color:#F5C95C">🟡 خصم على التجديد</span>
+                <label class="toggle"><input type="checkbox" checked data-reward="discount"><span class="toggle-slider"></span></label>
+              </div>
+              <div style="font-size:11.5px;color:var(--text-tertiary);line-height:1.5">المُحيل يستلم رصيد خصم يُحسم تلقائياً عند تجديده لاشتراكه</div>
+            </div>
+            <div style="border:1px solid rgba(155,108,255,0.25);border-radius:12px;padding:14px;background:rgba(155,108,255,0.04)">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                <span style="font-size:13.5px;font-weight:700;color:#C8A8FF">🟣 أيام مجانية</span>
+                <label class="toggle"><input type="checkbox" checked data-reward="extra_days"><span class="toggle-slider"></span></label>
+              </div>
+              <div style="font-size:11.5px;color:var(--text-tertiary);line-height:1.5">تُضاف أيام مجاناً لمدة اشتراك المُحيل الحالي مباشرة بدون تدخّل منه</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section C: The matrix — for each package, set the 3 reward values -->
+        <div style="margin-bottom:24px">
+          <div style="font-family:var(--f-display);font-weight:700;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-primary);margin-bottom:6px">٢. قيمة المكافأة لكل باقة</div>
+          <div style="font-size:12.5px;color:var(--text-tertiary);margin-bottom:14px;line-height:1.6">
+            <strong>اقرأ السطر هكذا:</strong> "إذا اشترك المُحال في <em>الباقة س</em>، يستلم المُحيل <em>كذا ر.س كاش</em> أو <em>كذا ر.س خصم</em> أو <em>كذا يوم</em>".
+          </div>
+
+          <div style="border:1px solid var(--border);border-radius:12px;overflow:hidden">
+            <!-- Matrix header -->
+            <div style="display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:0;background:rgba(255,255,255,0.03);border-bottom:1px solid var(--border)">
+              <div style="padding:12px 14px;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--text-tertiary);font-family:var(--f-tech)">الباقة التي اشترك بها المُحال</div>
+              <div style="padding:12px 14px;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#00E5FF;font-family:var(--f-tech);border-right:1px solid var(--border)">🔵 كاش (ر.س)</div>
+              <div style="padding:12px 14px;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#F5C95C;font-family:var(--f-tech);border-right:1px solid var(--border)">🟡 خصم (ر.س)</div>
+              <div style="padding:12px 14px;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#C8A8FF;font-family:var(--f-tech);border-right:1px solid var(--border)">🟣 أيام</div>
+            </div>
+
+            <!-- Row 1: Monthly -->
+            <div style="display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:0;border-bottom:1px solid var(--border)">
+              <div style="padding:14px;display:flex;align-items:center;gap:10px">
+                <div style="width:36px;height:36px;border-radius:9px;background:rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center;font-family:var(--f-display);font-weight:800;font-size:14px;color:var(--text-secondary)">ش</div>
+                <div>
+                  <div style="font-size:13.5px;font-weight:700;color:var(--text-primary)">شهري</div>
+                  <div style="font-size:11px;color:var(--text-tertiary);font-family:var(--f-mono)">30 يوم</div>
+                </div>
+              </div>
+              <div style="padding:10px 14px;border-right:1px solid var(--border)"><input class="input" value="50" style="text-align:center"></div>
+              <div style="padding:10px 14px;border-right:1px solid var(--border)"><input class="input" value="60" style="text-align:center"></div>
+              <div style="padding:10px 14px;border-right:1px solid var(--border)"><input class="input" value="7" style="text-align:center"></div>
+            </div>
+
+            <!-- Row 2: Quarterly -->
+            <div style="display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:0;border-bottom:1px solid var(--border)">
+              <div style="padding:14px;display:flex;align-items:center;gap:10px">
+                <div style="width:36px;height:36px;border-radius:9px;background:rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center;font-family:var(--f-display);font-weight:800;font-size:14px;color:var(--text-secondary)">ر</div>
+                <div>
+                  <div style="font-size:13.5px;font-weight:700;color:var(--text-primary)">ربع سنوي</div>
+                  <div style="font-size:11px;color:var(--text-tertiary);font-family:var(--f-mono)">90 يوم</div>
+                </div>
+              </div>
+              <div style="padding:10px 14px;border-right:1px solid var(--border)"><input class="input" value="120" style="text-align:center"></div>
+              <div style="padding:10px 14px;border-right:1px solid var(--border)"><input class="input" value="150" style="text-align:center"></div>
+              <div style="padding:10px 14px;border-right:1px solid var(--border)"><input class="input" value="15" style="text-align:center"></div>
+            </div>
+
+            <!-- Row 3: Gold annual -->
+            <div style="display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:0;border-bottom:1px solid var(--border);background:rgba(245,201,92,0.03)">
+              <div style="padding:14px;display:flex;align-items:center;gap:10px">
+                <div style="width:36px;height:36px;border-radius:9px;background:rgba(245,201,92,0.12);display:flex;align-items:center;justify-content:center;font-family:var(--f-display);font-weight:800;font-size:14px;color:#F5C95C">ذ</div>
+                <div>
+                  <div style="font-size:13.5px;font-weight:700;color:var(--text-primary)">سنوي ذهبي</div>
+                  <div style="font-size:11px;color:var(--text-tertiary);font-family:var(--f-mono)">365 يوم</div>
+                </div>
+              </div>
+              <div style="padding:10px 14px;border-right:1px solid var(--border)"><input class="input" value="200" style="text-align:center"></div>
+              <div style="padding:10px 14px;border-right:1px solid var(--border)"><input class="input" value="250" style="text-align:center"></div>
+              <div style="padding:10px 14px;border-right:1px solid var(--border)"><input class="input" value="30" style="text-align:center"></div>
+            </div>
+
+            <!-- Row 4: Platinum VIP -->
+            <div style="display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:0;background:rgba(155,108,255,0.03)">
+              <div style="padding:14px;display:flex;align-items:center;gap:10px">
+                <div style="width:36px;height:36px;border-radius:9px;background:rgba(155,108,255,0.12);display:flex;align-items:center;justify-content:center;font-family:var(--f-display);font-weight:800;font-size:14px;color:#C8A8FF">و</div>
+                <div>
+                  <div style="font-size:13.5px;font-weight:700;color:var(--text-primary)">سنوي بلاتيني · VIP</div>
+                  <div style="font-size:11px;color:var(--text-tertiary);font-family:var(--f-mono)">365 يوم</div>
+                </div>
+              </div>
+              <div style="padding:10px 14px;border-right:1px solid var(--border)"><input class="input" value="350" style="text-align:center"></div>
+              <div style="padding:10px 14px;border-right:1px solid var(--border)"><input class="input" value="420" style="text-align:center"></div>
+              <div style="padding:10px 14px;border-right:1px solid var(--border)"><input class="input" value="60" style="text-align:center"></div>
+            </div>
+          </div>
+
+          <div style="margin-top:10px;font-size:11.5px;color:var(--text-tertiary);font-family:var(--f-mono);line-height:1.6">
+            مثال على القراءة: لو المُحال اشترك بالباقة <strong style="color:var(--text-secondary)">السنوي الذهبي</strong>، فالمُحيل يستلم
+            <strong style="color:#00E5FF">200 ر.س كاش</strong> · أو <strong style="color:#F5C95C">250 ر.س خصم</strong> · أو <strong style="color:#C8A8FF">30 يوم مجاناً</strong> — حسب اختياره.
+          </div>
+        </div>
+
+        <!-- Section D: General settings -->
+        <div style="border-top:1px solid var(--border);padding-top:18px">
+          <div style="font-family:var(--f-display);font-weight:700;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-primary);margin-bottom:14px">٣. إعدادات عامة</div>
+
+          <div class="form-row">
+            <div class="field">
+              <label class="field-label">الحد الأدنى لطلب سحب الكاش (ر.س)</label>
+              <input class="input" value="150">
+              <div style="font-size:11px;color:var(--text-tertiary);margin-top:5px">المُحيل ما يقدر يطلب سحب إلا إذا رصيده الكاش وصل لهذا المبلغ</div>
+            </div>
+            <div class="field">
+              <label class="field-label">صلاحية رصيد الخصم (يوم)</label>
+              <input class="input" value="180">
+              <div style="font-size:11px;color:var(--text-tertiary);margin-top:5px">بعد كم يوم ينتهي رصيد الخصم إذا ما استخدمه المُحيل في تجديد</div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="field">
+              <label class="field-label">مدة تتبّع رابط الإحالة (يوم)</label>
+              <input class="input" value="30">
+              <div style="font-size:11px;color:var(--text-tertiary);margin-top:5px">الكوكي يبقى على متصفّح المُحال هذه المدة — أي اشتراك خلالها يُنسب للمُحيل</div>
+            </div>
+            <div class="field">
+              <label class="field-label">خصم ترحيبي للمُحال على أول اشتراك (ر.س)</label>
+              <input class="input" value="50">
+              <div style="font-size:11px;color:var(--text-tertiary);margin-top:5px">العميل الجديد يحصل على هذا الخصم لأنه دخل عبر إحالة (تشجيع للاشتراك)</div>
+            </div>
+          </div>
+
+          <div class="toggle-row">
+            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+            <div class="toggle-text">
+              <div class="toggle-title">السماح بتغيير نوع المكافأة بين كل إحالة وأخرى</div>
+              <div class="toggle-sub">المُحيل يقدر يختار "كاش" لإحالة و"أيام" لإحالة أخرى — الأرصدة المتراكمة تبقى في أنواعها</div>
+            </div>
+          </div>
+          <div class="toggle-row">
+            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+            <div class="toggle-text">
+              <div class="toggle-title">إشعار تلجرام عند كل إحالة ناجحة</div>
+              <div class="toggle-sub">يصل المُحيل رسالة فيها قيمة المكافأة والخيارات الثلاثة فيختار مباشرة</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>`;
+
+  const ZID_HTML = `
+    <div class="panel" data-syn="4">
+      <div class="panel-head" style="display:flex;justify-content:space-between;align-items:center">
+        <div class="panel-title"><svg><use href="#i-bolt"/></svg><span>تكامل زد · Zid</span></div>
+        <span class="badge-status s-active">متصل</span>
+      </div>
+      <div class="panel-body">
+        <div class="notice notice-rule" style="margin-bottom:16px">
+          <span class="notice-bar"></span>
+          <div class="notice-icon"><svg><use href="#i-check"/></svg></div>
+          <div class="notice-body">
+            <div class="notice-title">متصل · آخر مزامنة قبل 4 دقائق</div>
+            <div class="notice-text">المتجر متصل بمنصة زد. الطلبات والعملاء والاشتراكات تتزامن تلقائياً.</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field"><label class="field-label">رابط المتجر على زد</label><input class="input" value="https://camelspx.zid.sa" dir="ltr"></div>
+          <div class="field"><label class="field-label">معرّف المتجر (Store ID)</label><input class="input" value="STR-CMS-7842" dir="ltr"></div>
+        </div>
+        <div class="field">
+          <label class="field-label">API Key</label>
+          <input class="input" value="zid_live_a4f92k7q83bsqr2eth9n4m5j6l8p1d3v" dir="ltr" type="password">
+        </div>
+        <div class="field">
+          <label class="field-label">API Secret</label>
+          <input class="input" value="zss_pk_d3v5j8m4n2h9l6p1q7k3r5t8w0y2z4a6" dir="ltr" type="password">
+        </div>
+        <div class="field">
+          <label class="field-label">Webhook URL (يستقبل أحداث زد)</label>
+          <input class="input" value="https://api.camelspx.sa/webhooks/zid/v1" dir="ltr">
+        </div>
+        <div class="toggle-row"><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label><div class="toggle-text"><div class="toggle-title">مزامنة الطلبات تلقائياً</div><div class="toggle-sub">كل طلب جديد على زد يُسجَّل كاشتراك مدفوع</div></div></div>
+        <div class="toggle-row"><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label><div class="toggle-text"><div class="toggle-title">إنشاء عميل جديد تلقائياً</div><div class="toggle-sub">يُنشأ حساب عميل عند أول طلب من زد</div></div></div>
+        <div class="toggle-row"><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label><div class="toggle-text"><div class="toggle-title">إرسال دعوة تلجرام بعد الدفع</div><div class="toggle-sub">رابط قناة VIP يُرسَل تلقائياً بعد إتمام الدفع</div></div></div>
+      </div>
+    </div>`;
+
+  const VISUAL_HTML = `
+    <div class="panel" data-syn="5">
+      <div class="panel-head"><div class="panel-title"><svg><use href="#i-cam"/></svg><span>الهوية البصرية</span></div></div>
+      <div class="panel-body">
+        <div class="notice notice-rule" style="margin-bottom:16px">
+          <span class="notice-bar"></span>
+          <div class="notice-icon"><svg><use href="#i-info"/></svg></div>
+          <div class="notice-body">
+            <div class="notice-title">تخصيص هوية منصتك</div>
+            <div class="notice-text">عدّل الشعار والخطوط والروابط لتعكس علامتك. لاختيار <strong>ثيم ألوان كامل</strong>، اضغط: <a href="javascript:void(0)" onclick="parent.postMessage({type:'camelspx:navigate',target:'الثيمات.html'},'*')" style="color:var(--cyan);font-weight:700">صفحة الثيمات ←</a></div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field"><label class="field-label">اسم العلامة التجارية</label><input class="input" value="CAMEL SPX"></div>
+          <div class="field"><label class="field-label">شعار قصير (Tagline)</label><input class="input" value="منصة إشارات SPX الذكية"></div>
+        </div>
+        <div class="field">
+          <label class="field-label">رابط الشعار (PNG شفاف، 240×240px)</label>
+          <input class="input" value="https://cdn.camelspx.sa/brand/logo-2026.png" dir="ltr">
+        </div>
+        <div class="field">
+          <label class="field-label">رابط الـ Favicon (32×32px)</label>
+          <input class="input" value="https://cdn.camelspx.sa/brand/favicon.ico" dir="ltr">
+        </div>
+        <div class="form-row">
+          <div class="field"><label class="field-label">النطاق المخصّص</label><input class="input" value="app.camelspx.sa" dir="ltr"></div>
+          <div class="field"><label class="field-label">البريد الرسمي</label><input class="input" value="support@camelspx.sa" dir="ltr"></div>
+        </div>
+        <div class="field">
+          <label class="field-label">الخط الأساسي للواجهة</label>
+          <select class="select"><option>Cairo (الافتراضي)</option><option>Tajawal</option><option>IBM Plex Arabic</option><option>Almarai</option><option>Noto Kufi Arabic</option></select>
+        </div>
+        <div class="toggle-row"><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label><div class="toggle-text"><div class="toggle-title">إظهار الشعار في إشعارات تلجرام</div><div class="toggle-sub">الشعار يظهر مع كل صورة صفقة منشورة</div></div></div>
+        <div class="toggle-row"><label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label><div class="toggle-text"><div class="toggle-title">علامة مائية على صور الصفقات</div><div class="toggle-sub">إضافة شعار CAMEL SPX على صور المخططات تلقائياً</div></div></div>
+        <div class="toggle-row"><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label><div class="toggle-text"><div class="toggle-title">تخصيص قوالب البريد</div><div class="toggle-sub">رسائل التحقق والترحيب بتصميم العلامة</div></div></div>
+      </div>
+    </div>`;
+
+  // Append synthesized panels (hidden by default; show() controls visibility)
+  [REFERRAL_HTML, ZID_HTML, VISUAL_HTML].forEach(htmlStr => {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = htmlStr.trim();
+    const panel = tmp.firstElementChild;
+    panel.style.display = 'none';
+    panelCol.appendChild(panel);
+  });
+
+  // Tab index → resolver returning the panel element to show
+  const resolvers = {
+    0: () => realPanels[0],
+    1: () => realPanels[1],
+    2: () => panelCol.querySelector('[data-syn="2"]'),
+    3: () => realPanels[2],
+    4: () => panelCol.querySelector('[data-syn="4"]'),
+    5: () => panelCol.querySelector('[data-syn="5"]')
+  };
+
+  function show(i){
+    tabs.forEach((t,k) => t.classList.toggle('active', k===i));
+    // Hide all panels first
+    realPanels.forEach(p => p.style.display = 'none');
+    panelCol.querySelectorAll('[data-syn]').forEach(p => p.style.display = 'none');
+    // Show the matching one
+    const fn = resolvers[i];
+    if(fn){ const p = fn(); if(p) p.style.display = ''; }
+  }
+
+  tabs.forEach((t,i) => t.addEventListener('click', () => show(i)));
+  show(0);
+})();
+</script></body>
+</html>

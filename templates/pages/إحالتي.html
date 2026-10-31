@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إحالتي</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Orbitron:wght@700;800&family=JetBrains+Mono:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{--panel:rgba(20,28,52,.68);--cyan:#00E5FF;--gold:#F5C95C;--profit:#00FF94;--text:#F5F7FF;--muted:rgba(245,247,255,.58);--border:rgba(255,255,255,.08);--display:'Orbitron',sans-serif;--mono:'JetBrains Mono',monospace}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at top,rgba(0,229,255,.08),transparent 60%),linear-gradient(180deg,#080C18,#04060B);color:var(--text);font-family:'Cairo',sans-serif;padding:28px}.page{max-width:1100px;margin:auto}.eyebrow{font:800 11px var(--display);letter-spacing:2px;color:var(--cyan)}h1{font:800 34px var(--display);margin:8px 0}.sub{color:var(--muted);margin:0 0 18px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.card,.panel{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px}.label{color:var(--muted);font-size:12px;font-weight:900}.code{font:800 30px var(--mono);color:var(--cyan);direction:ltr;margin-top:8px}.value{font:800 28px var(--display);margin-top:8px}.panel{margin-top:18px}.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.choice{border:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.22);color:var(--text);border-radius:12px;padding:14px;cursor:pointer;font-weight:900}.choice.active{border-color:rgba(0,229,255,.45);background:rgba(0,229,255,.09);color:var(--cyan)}.btn{border:0;border-radius:10px;padding:10px 16px;font-weight:900;cursor:pointer;background:linear-gradient(135deg,#00E5FF,#0099BB);color:#03060b;margin-top:12px}.btn:disabled{opacity:.65;cursor:not-allowed}.input{width:100%;background:rgba(0,0,0,.24);border:1px solid rgba(255,255,255,.09);border-radius:10px;color:var(--text);padding:12px;margin:8px 0}.status{display:none;font-weight:900;margin-top:12px;padding:12px 14px;border-radius:10px;border:1px solid rgba(0,229,255,.18);background:rgba(0,229,255,.07);color:var(--cyan)}.status.show{display:block}.status.ok{border-color:rgba(0,255,148,.28);background:rgba(0,255,148,.08);color:var(--profit)}.status.err{border-color:rgba(255,61,92,.28);background:rgba(255,61,92,.08);color:#FF3D5C}@media(max-width:900px){.grid,.choices{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="page">
+  <div class="eyebrow">REFERRAL PROGRAM</div><h1>إحالتي</h1><p class="sub">شارك كودك، واختر طريقة المكافأة التي تريدها عند إحالة عميل جديد.</p>
+  <section class="grid">
+    <div class="card"><div class="label">كود الإحالة</div><div class="code" id="code">--</div><button class="btn" onclick="copyCode()">نسخ الكود</button></div>
+    <div class="card"><div class="label">عدد الإحالات</div><div class="value" id="refs">0</div></div>
+  </section>
+  <section class="panel">
+    <h3>طريقة المكافأة</h3>
+    <div class="label">الاختيار الحالي المحفوظ</div>
+    <div class="value" id="currentPrefLabel" style="font-family:'Cairo',sans-serif;font-size:22px;color:var(--gold);margin-bottom:14px">--</div>
+    <div class="choices">
+      <button class="choice" data-pref="cashout">كاش أوت</button>
+      <button class="choice" data-pref="discount">خصم عند التجديد</button>
+      <button class="choice" data-pref="days">أيام إضافية</button>
+    </div>
+    <button class="btn" id="savePrefBtn" onclick="savePref()">حفظ طريقة المكافأة</button>
+    <div class="status" id="status"></div>
+  </section>
+  <section class="panel">
+    <h3>تغيير كلمة المرور</h3>
+    <input class="input" id="newPass" type="password" placeholder="كلمة مرور جديدة">
+    <button class="btn" onclick="resetPassword()">حفظ كلمة المرور</button>
+  </section>
+</main>
+<script>
+let currentCode='';
+let savedPref='days';
+let pendingPref='days';
+const prefLabels={cashout:'كاش أوت',discount:'خصم عند التجديد',days:'أيام إضافية'};
+async function api(url,opt){const r=await fetch(url,Object.assign({credentials:'same-origin'},opt||{}));const j=await r.json();if(j.status&&j.status!=='ok')throw Error(j.message||'خطأ');return j}
+function paintPref(pref){document.querySelectorAll('.choice').forEach(b=>b.classList.toggle('active',b.dataset.pref===pref))}
+function showStatus(msg,type){status.textContent=msg;status.className='status show '+(type||'')}
+async function load(keepStatus){const d=await api('/api/client/profile');const c=d.client||{},w=d.wallet||{};currentCode=c.code||'';code.textContent=currentCode||'--';refs.textContent=c.refs||0;savedPref=w.reward_preference||'days';pendingPref=savedPref;currentPrefLabel.textContent=prefLabels[savedPref]||savedPref;paintPref(pendingPref);if(!keepStatus){status.textContent='';status.className='status'}}
+function setPref(pref){pendingPref=pref;paintPref(pref);showStatus(pref===savedPref?'هذا هو اختيارك المحفوظ حالياً':'اخترت '+(prefLabels[pref]||pref)+'، اضغط حفظ لتثبيت الاختيار')}
+async function savePref(){const btn=document.getElementById('savePrefBtn');try{btn.disabled=true;btn.textContent='جار الحفظ...';await api('/api/client/referral/preference',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({preference:pendingPref})});savedPref=pendingPref;currentPrefLabel.textContent=prefLabels[savedPref]||savedPref;showStatus('تم حفظ طريقة المكافأة بنجاح: '+(prefLabels[savedPref]||savedPref),'ok');await load(true)}catch(e){showStatus(e.message,'err')}finally{btn.disabled=false;btn.textContent='حفظ طريقة المكافأة'}}
+function copyCode(){navigator.clipboard&&navigator.clipboard.writeText(currentCode);showStatus('تم نسخ الكود','ok')}
+async function resetPassword(){try{await api('/api/client/password/reset',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:newPass.value})});showStatus('تم تغيير كلمة المرور','ok');newPass.value=''}catch(e){showStatus(e.message,'err')}}
+document.querySelectorAll('.choice').forEach(b=>b.onclick=()=>setPref(b.dataset.pref));
+load().catch(e=>showStatus(e.message,'err'));
+</script>
+</body>
+</html>
